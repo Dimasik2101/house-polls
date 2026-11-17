@@ -173,7 +173,7 @@
             cursor: pointer;
             margin-top: 12px;
             transition: 0.2s;
-            display: none; /* по умолчанию скрыта, управляется через скрипт */
+            display: none;
         }
         .btn-delete-poll:hover {
             background: rgba(255, 77, 77, 0.1);
@@ -417,11 +417,14 @@
     <!-- Вкладка 4: Архив -->
     <div id="archive" class="tab-content">
         <h2 data-i18n="archive_title">Архів опитувань</h2>
-        <div class="card">
+        <div class="card" id="archive-card-0">
             <span class="badge" style="background: #2A2A32; color: var(--hint);" data-i18n="badge_closed">Завершено</span>
             <p style="margin: 8px 0 12px 0; font-weight: 500;" data-i18n="archive_q">Ремонт під'їзних дверей (листопад)</p>
             <p style="font-size: 13px; color: var(--hint); margin: 0;" data-i18n="archive_res">Підсумок: Вирішено робити (89% за)</p>
+            
+            <button class="btn-delete-poll" id="btn-delete-archive" onclick="deleteArchiveItem()" data-i18n="btn_delete">🗑 Видалити опитування</button>
         </div>
+        <div id="archive-empty" style="display: none; font-size: 13px; color: var(--hint);" data-i18n="no_archive">Архів порожній.</div>
     </div>
 
     <!-- Вкладка 5: Создать опрос -->
@@ -507,6 +510,7 @@
                 badge_closed: "Завершено",
                 archive_q: "Ремонт під'їзних дверей (листопад)",
                 archive_res: "Підсумок: Вирішено робити (89% за)",
+                no_archive: "Архів порожній.",
                 create_title: "Нове опитування",
                 label_theme: "Тема опитування",
                 label_options: "Варіанти відповіді (через кому)",
@@ -548,6 +552,7 @@
                 badge_closed: "Завершен",
                 archive_q: "Ремонт подъездных дверей (ноябрь)",
                 archive_res: "Итог: Решено делать (89% за)",
+                no_archive: "Архив пуст.",
                 create_title: "Новый опрос",
                 label_theme: "Тема опроса",
                 label_options: "Варианты ответа (через запятую)",
@@ -567,6 +572,7 @@
         let pollData = JSON.parse(localStorage.getItem('poll_data')) || {
             anon: { active: true, votes: [21, 9] },
             public: { active: true, votes: [14, 3] },
+            archiveActive: true,
             customPolls: []
         };
 
@@ -590,10 +596,22 @@
             localStorage.setItem('my_vote_history', JSON.stringify(myVoteHistory));
             updatePollUI();
             updateMyVotesUI();
+            updateArchiveUI();
+        }
+
+        function updateArchiveUI() {
+            const archiveCard = document.getElementById('archive-card-0');
+            const archiveEmpty = document.getElementById('archive-empty');
+            if (!pollData.archiveActive) {
+                archiveCard.style.display = 'none';
+                archiveEmpty.style.display = 'block';
+            } else {
+                archiveCard.style.display = 'block';
+                archiveEmpty.style.display = 'none';
+            }
         }
 
         function updatePollUI() {
-            // Анонимный опрос
             const anonCard = document.getElementById('anon-opt-0').closest('.card');
             if (!pollData.anon.active) {
                 anonCard.style.display = 'none';
@@ -612,7 +630,6 @@
                 document.getElementById('anon-opt-1').classList.toggle('my-vote', userVotes['anon'] === 1);
             }
 
-            // Публичный опрос
             const publicCard = document.getElementById('public-opt-0').closest('.card');
             if (!pollData.public.active) {
                 publicCard.style.display = 'none';
@@ -631,7 +648,6 @@
                 document.getElementById('public-opt-1').classList.toggle('my-vote', userVotes['public'] === 1);
             }
 
-            // Кастомные опросы
             let container = document.getElementById('dynamic-polls-container');
             container.innerHTML = '';
             pollData.customPolls.forEach((poll, index) => {
@@ -728,6 +744,13 @@
             }
         }
 
+        function deleteArchiveItem() {
+            if (confirm(currentLang === 'uk' ? 'Ви дійсно хочете видалити цей пункт з архіву?' : 'Вы действительно хотите удалить этот пункт из архива?')) {
+                pollData.archiveActive = false;
+                saveData();
+            }
+        }
+
         function deleteCustomPoll(index) {
             if (confirm(currentLang === 'uk' ? 'Ви дійсно хочете видалити це опитування?' : 'Вы действительно хотите удалить этот опрос?')) {
                 pollData.customPolls.splice(index, 1);
@@ -797,13 +820,13 @@
         function logoutUser() {
             localStorage.setItem('is_logged_out', 'true');
             initAuth();
-            updatePollUI();
+            saveData();
         }
 
         function loginUser() {
             localStorage.setItem('is_logged_out', 'false');
             initAuth();
-            updatePollUI();
+            saveData();
         }
         
         function initAuth() {
@@ -816,6 +839,7 @@
             const loginBtn = document.getElementById('login-btn');
             const btnDeleteAnon = document.getElementById('btn-delete-anon');
             const btnDeletePublic = document.getElementById('btn-delete-public');
+            const btnDeleteArchive = document.getElementById('btn-delete-archive');
 
             if (isLoggedOut) {
                 document.getElementById('user-fullname').innerText = currentLang === 'uk' ? 'Гість (Не авторизовано)' : 'Гость (Не авторизован)';
@@ -827,6 +851,7 @@
                 if (loginBtn) loginBtn.style.display = 'block';
                 if (btnDeleteAnon) btnDeleteAnon.style.display = 'none';
                 if (btnDeletePublic) btnDeletePublic.style.display = 'none';
+                if (btnDeleteArchive) btnDeleteArchive.style.display = 'none';
             } else if (user) {
                 const fullName = `${user.first_name || ''} ${user.last_name || ''}`.trim() || user.username || 'Жилец';
                 document.getElementById('user-fullname').innerText = fullName;
@@ -841,12 +866,14 @@
                     if (adminPanel) adminPanel.style.display = 'none';
                     if (btnDeleteAnon) btnDeleteAnon.style.display = 'none';
                     if (btnDeletePublic) btnDeletePublic.style.display = 'none';
+                    if (btnDeleteArchive) btnDeleteArchive.style.display = 'none';
                     document.querySelector('.user-status').innerText = currentLang === 'uk' ? 'Мешканець' : 'Жилец';
                 } else {
                     if (createTabBtn) createTabBtn.style.display = 'block';
                     if (adminPanel) adminPanel.style.display = 'block';
                     if (btnDeleteAnon) btnDeleteAnon.style.display = 'block';
                     if (btnDeletePublic) btnDeletePublic.style.display = 'block';
+                    if (btnDeleteArchive) btnDeleteArchive.style.display = 'block';
                     document.querySelector('.user-status').innerText = translations[currentLang].admin_status;
                 }
             } else {
@@ -856,6 +883,7 @@
                 if (adminPanel) adminPanel.style.display = 'block';
                 if (btnDeleteAnon) btnDeleteAnon.style.display = 'block';
                 if (btnDeletePublic) btnDeletePublic.style.display = 'block';
+                if (btnDeleteArchive) btnDeleteArchive.style.display = 'block';
                 document.querySelector('.user-status').innerText = translations[currentLang].admin_status;
             }
         }
@@ -864,6 +892,7 @@
             setLanguage(currentLang);
             initAuth();
             updatePollUI();
+            updateArchiveUI();
         });
     </script>
 </body>
