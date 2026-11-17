@@ -23,6 +23,33 @@
             padding: 16px;
         }
         h2 { font-size: 20px; margin-bottom: 16px; }
+        
+        /* Вкладки (Tabs) */
+        .tabs {
+            display: flex;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 10px;
+            padding: 4px;
+            margin-bottom: 16px;
+        }
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--hint);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .tab.active {
+            background: var(--accent);
+            color: var(--btn-text);
+        }
+
+        /* Карточки опросов */
         .card {
             background: var(--card-bg);
             border: 1px solid var(--card-border);
@@ -30,23 +57,72 @@
             padding: 16px;
             margin-bottom: 12px;
         }
+        .badge {
+            font-size: 11px;
+            padding: 4px 8px;
+            border-radius: 6px;
+            background: #2A2A32;
+            color: var(--accent);
+            font-weight: 600;
+            display: inline-block;
+            margin-bottom: 8px;
+        }
+        .option-row {
+            background: #121214;
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .option-row:hover {
+            border-color: var(--accent);
+        }
         .btn {
             background: var(--accent);
             color: var(--btn-text);
             border: none;
             border-radius: 8px;
-            padding: 10px 16px;
+            padding: 12px 16px;
             font-weight: 600;
             width: 100%;
             cursor: pointer;
-            margin-top: 10px;
+            margin-top: 12px;
         }
     </style>
 </head>
 <body>
-    <h2>Активные опросы</h2>
-    <div class="card">
-        <p>Загрузка опросов...</p>
+
+    <!-- Вкладки интерфейса -->
+    <div class="tabs">
+        <div class="tab active">Активные</div>
+        <div class="tab">Архив</div>
+        <div class="tab">+ Создать</div>
     </div>
+
+    <h2>Активные опросы дома</h2>
+
+    <!-- Пример карточки опроса -->
+    <div class="card">
+        <span class="badge">Открытый опрос</span>
+        <p style="margin: 8px 0 12px 0; font-weight: 500;">Установка шлагбаума на въезде во двор?</p>
+        
+        <div class="option-row" onclick="alert('Голос учтен!')">
+            <span>За установку шлагбаума</span>
+            <strong style="color: var(--accent);">14 голосов</strong>
+        </div>
+        
+        <div class="option-row" onclick="alert('Голос учтен!')">
+            <span>Против</span>
+            <strong style="color: var(--hint);">3 голоса</strong>
+        </div>
+
+        <button class="btn" onclick="alert('Переход к деталям опроса')">Посмотреть детально</button>
+    </div>
+
 </body>
 </html>
