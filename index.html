@@ -1,0 +1,400 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="2685.6">
+  <style type="text/css">
+    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+  </style>
+</head>
+<body>
+<p class="p1">&lt;!DOCTYPE html&gt;</p>
+<p class="p1">&lt;html lang="ru"&gt;</p>
+<p class="p1">&lt;head&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;meta charset="UTF-8"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;title&gt;Опросы жильцов&lt;/title&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;script src="https://telegram.org/js/telegram-web-app.js"&gt;&lt;/script&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;style&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>:root {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>--bg: #121214;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>--card-bg: #1A1A1E;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>--card-border: #2A2A32;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>--text: #FFFFFF;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>--hint: #9CA3AF;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>--accent: #CCFF00;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>--btn-text: #121214;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>body {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>background-color: var(--bg);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>color: var(--text);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>margin: 0;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>padding: 16px;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>.tabs {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>display: flex;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>gap: 8px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>margin-bottom: 16px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>background: var(--card-bg);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>padding: 4px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border-radius: 12px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border: 1px solid var(--card-border);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.tab {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>flex: 1;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>padding: 10px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border: none;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border-radius: 8px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>background: transparent;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>color: var(--hint);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-weight: 600;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-size: 14px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>cursor: pointer;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>transition: all 0.2s ease;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.tab.active {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>background: var(--accent);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>color: var(--btn-text);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>.card {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>background: var(--card-bg);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border: 1px solid var(--card-border);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border-radius: 16px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>padding: 16px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>margin-bottom: 12px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>.badge {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>display: inline-block;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-size: 11px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-weight: 700;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>text-transform: uppercase;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>letter-spacing: 0.5px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>padding: 5px 10px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border-radius: 6px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>background: rgba(204, 255, 0, 0.1);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>color: var(--accent);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>margin-bottom: 10px;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.badge.anon {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>background: rgba(245, 158, 11, 0.1);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>color: #F59E0B;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>h3, h4 { margin: 0 0 10px 0; }</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>input[type="text"] {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>width: 100%;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>box-sizing: border-box;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>padding: 12px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>margin-bottom: 10px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border: 1px solid var(--card-border);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border-radius: 10px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>background: var(--bg);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>color: var(--text);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-size: 14px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>outline: none;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>input[type="text"]:focus { border-color: var(--accent); }</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>.anon-box {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>display: flex;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>align-items: center;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>justify-content: space-between;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>background: var(--bg);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>padding: 12px 14px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border-radius: 10px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border: 1px solid var(--card-border);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>margin: 14px 0;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.anon-box input[type="checkbox"] {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>width: 20px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>height: 20px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>accent-color: var(--accent);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>.btn {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>width: 100%;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>padding: 14px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border: none;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border-radius: 12px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>background: var(--accent);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>color: var(--btn-text);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-weight: 700;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-size: 15px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>cursor: pointer;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.btn:active { transform: scale(0.98); }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.btn-sec {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>background: transparent;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border: 1px solid var(--card-border);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>color: var(--text);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>margin-top: 8px;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>.option-row {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>display: flex;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>justify-content: space-between;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>align-items: center;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>padding: 12px 14px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>background: var(--bg);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border: 1px solid var(--card-border);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border-radius: 10px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>margin-top: 8px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>cursor: pointer;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.option-row.voted {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border-color: var(--accent);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>background: rgba(204, 255, 0, 0.05);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>.hidden { display: none; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.actions { display: flex; gap: 8px; margin-top: 12px; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.voter-names { font-size: 11px; color: var(--hint); margin-top: 4px; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.loader { text-align: center; color: var(--hint); padding: 20px; }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/style&gt;</p>
+<p class="p1">&lt;/head&gt;</p>
+<p class="p1">&lt;body&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="tabs"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;button id="tab-btn-active" class="tab active" onclick="switchTab('active')"&gt;Активные&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;button id="tab-btn-create" class="tab" onclick="switchTab('create')"&gt;+ Опрос&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;button id="tab-btn-history" class="tab" onclick="switchTab('history')"&gt;История&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div id="loader" class="loader"&gt;Загрузка опросов...&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div id="view-active"&gt;&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div id="view-create" class="hidden"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="card"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;h3 id="form-title" style="margin-bottom: 14px;"&gt;Новый опрос&lt;/h3&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;input type="hidden" id="edit-id"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;input type="text" id="poll-question" placeholder="Суть вопроса (напр. Замена ворот во дворе)"&gt;</p>
+<p class="p2"><span class="Apple-converted-space">      </span></p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div id="options-container"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;input type="text" class="poll-opt" placeholder="Вариант 1"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;input type="text" class="poll-opt" placeholder="Вариант 2"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p2"><span class="Apple-converted-space">      </span></p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;button class="btn btn-sec" onclick="addOptionInput()"&gt;+ Добавить вариант&lt;/button&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="anon-box"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;strong style="font-size: 14px;"&gt;🕵️ Анонимное голосование&lt;/strong&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div style="font-size: 12px; color: var(--hint);"&gt;Имена жильцов будут скрыты&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;input type="checkbox" id="poll-anon"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;button class="btn" onclick="savePoll()"&gt;Опубликовать опрос&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div id="view-history" class="hidden"&gt;&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;script&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const DB_URL = "https://house-polls-default-rtdb.europe-west1.firebasedatabase.app";</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>const tg = window.Telegram.WebApp;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>tg.expand();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const user = tg.initDataUnsafe?.user || { id: Math.floor(Math.random()*100000), first_name: "Тест-Жилец" };</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>let polls = [];</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>async function loadPolls() {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>try {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const res = await fetch(`${DB_URL}/polls.json`);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const data = await res.json();</p>
+<p class="p1"><span class="Apple-converted-space">        </span>polls = data ? Object.values(data).sort((a, b) =&gt; b.id - a.id) : [];</p>
+<p class="p1"><span class="Apple-converted-space">      </span>} catch (e) {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>console.error("Ошибка загрузки:", e);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>}</p>
+<p class="p1"><span class="Apple-converted-space">      </span>document.getElementById('loader').classList.add('hidden');</p>
+<p class="p1"><span class="Apple-converted-space">      </span>render();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>async function syncPollToDB(poll) {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>await fetch(`${DB_URL}/polls/${poll.id}.json`, {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>method: 'PUT',</p>
+<p class="p1"><span class="Apple-converted-space">        </span>headers: { 'Content-Type': 'application/json' },</p>
+<p class="p1"><span class="Apple-converted-space">        </span>body: JSON.stringify(poll)</p>
+<p class="p1"><span class="Apple-converted-space">      </span>});</p>
+<p class="p1"><span class="Apple-converted-space">      </span>await loadPolls();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>function switchTab(tab) {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>document.querySelectorAll('.tab').forEach(t =&gt; t.classList.remove('active'));</p>
+<p class="p1"><span class="Apple-converted-space">      </span>document.getElementById('tab-btn-' + tab).classList.add('active');</p>
+<p class="p2"><span class="Apple-converted-space">      </span></p>
+<p class="p1"><span class="Apple-converted-space">      </span>['active', 'create', 'history'].forEach(v =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>document.getElementById('view-' + v).classList.toggle('hidden', v !== tab);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>});</p>
+<p class="p1"><span class="Apple-converted-space">      </span>if (tab === 'create' &amp;&amp; !document.getElementById('edit-id').value) resetForm();</p>
+<p class="p1"><span class="Apple-converted-space">      </span>render();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>function addOptionInput(val = '') {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const inp = document.createElement('input');</p>
+<p class="p1"><span class="Apple-converted-space">      </span>inp.type = 'text';</p>
+<p class="p1"><span class="Apple-converted-space">      </span>inp.className = 'poll-opt';</p>
+<p class="p1"><span class="Apple-converted-space">      </span>inp.placeholder = 'Следующий вариант';</p>
+<p class="p1"><span class="Apple-converted-space">      </span>inp.value = val;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>document.getElementById('options-container').appendChild(inp);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>function resetForm() {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>document.getElementById('form-title').innerText = 'Новый опрос';</p>
+<p class="p1"><span class="Apple-converted-space">      </span>document.getElementById('edit-id').value = '';</p>
+<p class="p1"><span class="Apple-converted-space">      </span>document.getElementById('poll-question').value = '';</p>
+<p class="p1"><span class="Apple-converted-space">      </span>document.getElementById('poll-anon').checked = false;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>document.getElementById('options-container').innerHTML = `</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;input type="text" class="poll-opt" placeholder="Вариант 1"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;input type="text" class="poll-opt" placeholder="Вариант 2"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>`;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>async function savePoll() {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const id = document.getElementById('edit-id').value;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const question = document.getElementById('poll-question').value.trim();</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const isAnon = document.getElementById('poll-anon').checked;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const opts = Array.from(document.querySelectorAll('.poll-opt'))</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.map(i =&gt; i.value.trim())</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.filter(Boolean);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>if (!question || opts.length &lt; 2) return alert('Введите вопрос и минимум 2 варианта ответа!');</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>let targetPoll;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>if (id) {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>targetPoll = polls.find(p =&gt; p.id == id);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>targetPoll.question = question;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>targetPoll.isAnon = isAnon;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>targetPoll.options = opts.map((text, idx) =&gt; ({</p>
+<p class="p1"><span class="Apple-converted-space">          </span>text,</p>
+<p class="p1"><span class="Apple-converted-space">          </span>voters: (targetPoll.options[idx] &amp;&amp; targetPoll.options[idx].voters) ? targetPoll.options[idx].voters : []</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}));</p>
+<p class="p1"><span class="Apple-converted-space">      </span>} else {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>targetPoll = {</p>
+<p class="p1"><span class="Apple-converted-space">          </span>id: Date.now(),</p>
+<p class="p1"><span class="Apple-converted-space">          </span>question,</p>
+<p class="p1"><span class="Apple-converted-space">          </span>isAnon,</p>
+<p class="p1"><span class="Apple-converted-space">          </span>status: 'active',</p>
+<p class="p1"><span class="Apple-converted-space">          </span>date: new Date().toLocaleDateString('ru-RU'),</p>
+<p class="p1"><span class="Apple-converted-space">          </span>options: opts.map(text =&gt; ({ text, voters: [] }))</p>
+<p class="p1"><span class="Apple-converted-space">        </span>};</p>
+<p class="p1"><span class="Apple-converted-space">      </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>document.getElementById('loader').classList.remove('hidden');</p>
+<p class="p1"><span class="Apple-converted-space">      </span>await syncPollToDB(targetPoll);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>resetForm();</p>
+<p class="p1"><span class="Apple-converted-space">      </span>switchTab('active');</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>async function vote(pollId, optIdx) {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const poll = polls.find(p =&gt; p.id === pollId);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>if (!poll || poll.status !== 'active') return;</p>
+<p class="p2"><span class="Apple-converted-space">      </span></p>
+<p class="p1"><span class="Apple-converted-space">      </span>poll.options.forEach(o =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>if (!o.voters) o.voters = [];</p>
+<p class="p1"><span class="Apple-converted-space">        </span>o.voters = o.voters.filter(v =&gt; v.id !== user.id);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>});</p>
+<p class="p1"><span class="Apple-converted-space">      </span>poll.options[optIdx].voters.push({ id: user.id, name: user.first_name });</p>
+<p class="p2"><span class="Apple-converted-space">      </span></p>
+<p class="p1"><span class="Apple-converted-space">      </span>render();</p>
+<p class="p1"><span class="Apple-converted-space">      </span>await syncPollToDB(poll);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>function editPoll(id) {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const poll = polls.find(p =&gt; p.id === id);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>switchTab('create');</p>
+<p class="p1"><span class="Apple-converted-space">      </span>document.getElementById('form-title').innerText = 'Редактирование';</p>
+<p class="p1"><span class="Apple-converted-space">      </span>document.getElementById('edit-id').value = poll.id;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>document.getElementById('poll-question').value = poll.question;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>document.getElementById('poll-anon').checked = poll.isAnon;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const cont = document.getElementById('options-container');</p>
+<p class="p1"><span class="Apple-converted-space">      </span>cont.innerHTML = '';</p>
+<p class="p1"><span class="Apple-converted-space">      </span>poll.options.forEach(o =&gt; addOptionInput(o.text));</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>async function archivePoll(id) {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const poll = polls.find(p =&gt; p.id === id);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>poll.status = 'history';</p>
+<p class="p1"><span class="Apple-converted-space">      </span>await syncPollToDB(poll);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>function render() {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const activeEl = document.getElementById('view-active');</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const historyEl = document.getElementById('view-history');</p>
+<p class="p1"><span class="Apple-converted-space">      </span>activeEl.innerHTML = '';</p>
+<p class="p1"><span class="Apple-converted-space">      </span>historyEl.innerHTML = '';</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>const activePolls = polls.filter(p =&gt; p.status === 'active');</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const historyPolls = polls.filter(p =&gt; p.status !== 'active');</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>if (activePolls.length === 0) {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>activeEl.innerHTML = `&lt;div class="card" style="text-align: center; color: var(--hint);"&gt;Пока нет активных опросов. Нажмите «+ Опрос», чтобы создать первый!&lt;/div&gt;`;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>}</p>
+<p class="p1"><span class="Apple-converted-space">      </span>if (historyPolls.length === 0) {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>historyEl.innerHTML = `&lt;div class="card" style="text-align: center; color: var(--hint);"&gt;История опросов пока пуста.&lt;/div&gt;`;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>polls.forEach(poll =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const totalVotes = poll.options.reduce((sum, o) =&gt; sum + (o.voters ? o.voters.length : 0), 0);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const card = document.createElement('div');</p>
+<p class="p1"><span class="Apple-converted-space">        </span>card.className = 'card';</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>let optionsHtml = poll.options.map((opt, idx) =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">          </span>const voters = opt.voters || [];</p>
+<p class="p1"><span class="Apple-converted-space">          </span>const pct = totalVotes ? Math.round((voters.length / totalVotes) * 100) : 0;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>const isVoted = voters.some(v =&gt; v.id === user.id);</p>
+<p class="p1"><span class="Apple-converted-space">          </span>const names = !poll.isAnon &amp;&amp; voters.length<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>? `&lt;div class="voter-names"&gt;Проголосовали: ${voters.map(v =&gt; v.name).join(', ')}&lt;/div&gt;`<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>: '';</p>
+<p class="p1"><span class="Apple-converted-space">          </span>return `</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="option-row ${isVoted ? 'voted' : ''}" onclick="vote(${poll.id}, ${idx})"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;div style="font-weight: 500;"&gt;${opt.text}&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>${names}</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;strong style="color: var(--accent);"&gt;${voters.length} (${pct}%)&lt;/strong&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>`;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}).join('');</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>const actionsHtml = poll.status === 'active' ? `</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="actions"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;button class="btn btn-sec" style="margin-top:0;" onclick="editPoll(${poll.id})"&gt;✏️ Изменить&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;button class="btn btn-sec" style="margin-top:0;" onclick="archivePoll(${poll.id})"&gt;📦 В архив&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>` : `&lt;div style="font-size: 12px; color: var(--hint); margin-top: 10px;"&gt;Архив • ${poll.date}&lt;/div&gt;`;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>card.innerHTML = `</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;span class="badge ${poll.isAnon ? 'anon' : ''}"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>${poll.isAnon ? '🕵️ Анонимный опрос' : '👁 Открытый опрос'}</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;h4&gt;${poll.question}&lt;/h4&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>${optionsHtml}</p>
+<p class="p1"><span class="Apple-converted-space">          </span>${actionsHtml}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>`;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>if (poll.status === 'active') activeEl.appendChild(card);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>else historyEl.appendChild(card);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>});</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>loadPolls();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>setInterval(loadPolls, 5000);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/script&gt;</p>
+<p class="p1">&lt;/body&gt;</p>
+<p class="p1">&lt;/html&gt;</p>
+</body>
+</html>
