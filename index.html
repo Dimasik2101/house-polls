@@ -160,6 +160,25 @@
             transition: width 0.4s ease;
         }
 
+        /* Кнопка удаления для админа */
+        .btn-delete-poll {
+            background: transparent;
+            border: 1px solid var(--danger);
+            color: var(--danger);
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 12px;
+            font-weight: 600;
+            width: 100%;
+            cursor: pointer;
+            margin-top: 12px;
+            transition: 0.2s;
+            display: none; /* по умолчанию скрыта, управляется через скрипт */
+        }
+        .btn-delete-poll:hover {
+            background: rgba(255, 77, 77, 0.1);
+        }
+
         /* Панель результатов админа */
         .admin-panel {
             margin-top: 16px;
@@ -335,6 +354,8 @@
                     <strong id="anon-votes-1" style="color: var(--hint);">9 (30%)</strong>
                 </div>
             </div>
+            
+            <button class="btn-delete-poll" id="btn-delete-anon" onclick="deleteFixedPoll('anon')" data-i18n="btn_delete">🗑 Видалити опитування</button>
         </div>
     </div>
 
@@ -378,6 +399,8 @@
                 </div>
                 <div style="font-size: 11px; color: var(--hint); margin-top: 8px; text-align: right;" data-i18n="total_votes">Всього проголосувало: 17 мешканців</div>
             </div>
+
+            <button class="btn-delete-poll" id="btn-delete-public" onclick="deleteFixedPoll('public')" data-i18n="btn_delete">🗑 Видалити опитування</button>
         </div>
 
         <div id="dynamic-polls-container"></div>
@@ -442,7 +465,6 @@
     </div>
 
     <script>
-        // Инициализация Telegram WebApp с принудительным развертыванием
         const tg = window.Telegram.WebApp;
         try {
             tg.expand();
@@ -489,6 +511,7 @@
                 label_theme: "Тема опитування",
                 label_options: "Варіанти відповіді (через кому)",
                 btn_publish: "Опублікувати опитування",
+                btn_delete: "🗑 Видалити опитування",
                 settings_title: "Налаштування мови",
                 settings_desc: "Оберіть мову інтерфейсу додатку:",
                 acc_title: "Керування акаунтом",
@@ -529,6 +552,7 @@
                 label_theme: "Тема опроса",
                 label_options: "Варианты ответа (через запятую)",
                 btn_publish: "Опубликовать опрос",
+                btn_delete: "🗑 Удалить опрос",
                 settings_title: "Настройки языка",
                 settings_desc: "Выберите язык интерфейса приложения:",
                 acc_title: "Управление аккаунтом",
@@ -541,8 +565,8 @@
         let currentLang = localStorage.getItem('app_lang') || 'uk';
 
         let pollData = JSON.parse(localStorage.getItem('poll_data')) || {
-            anon: { votes: [21, 9] },
-            public: { votes: [14, 3] },
+            anon: { active: true, votes: [21, 9] },
+            public: { active: true, votes: [14, 3] },
             customPolls: []
         };
 
@@ -569,30 +593,45 @@
         }
 
         function updatePollUI() {
-            let anonTotal = pollData.anon.votes.reduce((a, b) => a + b, 0);
-            let anonP0 = anonTotal ? Math.round((pollData.anon.votes[0] / anonTotal) * 100) : 0;
-            let anonP1 = 100 - anonP0;
-            
-            document.getElementById('anon-bar-0').style.width = anonP0 + '%';
-            document.getElementById('anon-bar-1').style.width = anonP1 + '%';
-            document.getElementById('anon-votes-0').innerText = `${pollData.anon.votes[0]} (${anonP0}%)`;
-            document.getElementById('anon-votes-1').innerText = `${pollData.anon.votes[1]} (${anonP1}%)`;
+            // Анонимный опрос
+            const anonCard = document.getElementById('anon-opt-0').closest('.card');
+            if (!pollData.anon.active) {
+                anonCard.style.display = 'none';
+            } else {
+                anonCard.style.display = 'block';
+                let anonTotal = pollData.anon.votes.reduce((a, b) => a + b, 0);
+                let anonP0 = anonTotal ? Math.round((pollData.anon.votes[0] / anonTotal) * 100) : 0;
+                let anonP1 = 100 - anonP0;
+                
+                document.getElementById('anon-bar-0').style.width = anonP0 + '%';
+                document.getElementById('anon-bar-1').style.width = anonP1 + '%';
+                document.getElementById('anon-votes-0').innerText = `${pollData.anon.votes[0]} (${anonP0}%)`;
+                document.getElementById('anon-votes-1').innerText = `${pollData.anon.votes[1]} (${anonP1}%)`;
 
-            document.getElementById('anon-opt-0').classList.toggle('my-vote', userVotes['anon'] === 0);
-            document.getElementById('anon-opt-1').classList.toggle('my-vote', userVotes['anon'] === 1);
+                document.getElementById('anon-opt-0').classList.toggle('my-vote', userVotes['anon'] === 0);
+                document.getElementById('anon-opt-1').classList.toggle('my-vote', userVotes['anon'] === 1);
+            }
 
-            let pubTotal = pollData.public.votes.reduce((a, b) => a + b, 0);
-            let pubP0 = pubTotal ? Math.round((pollData.public.votes[0] / pubTotal) * 100) : 0;
-            let pubP1 = 100 - pubP0;
+            // Публичный опрос
+            const publicCard = document.getElementById('public-opt-0').closest('.card');
+            if (!pollData.public.active) {
+                publicCard.style.display = 'none';
+            } else {
+                publicCard.style.display = 'block';
+                let pubTotal = pollData.public.votes.reduce((a, b) => a + b, 0);
+                let pubP0 = pubTotal ? Math.round((pollData.public.votes[0] / pubTotal) * 100) : 0;
+                let pubP1 = 100 - pubP0;
 
-            document.getElementById('public-bar-0').style.width = pubP0 + '%';
-            document.getElementById('public-bar-1').style.width = pubP1 + '%';
-            document.getElementById('public-votes-0').innerText = `${pollData.public.votes[0]} (${pubP0}%)`;
-            document.getElementById('public-votes-1').innerText = `${pollData.public.votes[1]} (${pubP1}%)`;
+                document.getElementById('public-bar-0').style.width = pubP0 + '%';
+                document.getElementById('public-bar-1').style.width = pubP1 + '%';
+                document.getElementById('public-votes-0').innerText = `${pollData.public.votes[0]} (${pubP0}%)`;
+                document.getElementById('public-votes-1').innerText = `${pollData.public.votes[1]} (${pubP1}%)`;
 
-            document.getElementById('public-opt-0').classList.toggle('my-vote', userVotes['public'] === 0);
-            document.getElementById('public-opt-1').classList.toggle('my-vote', userVotes['public'] === 1);
+                document.getElementById('public-opt-0').classList.toggle('my-vote', userVotes['public'] === 0);
+                document.getElementById('public-opt-1').classList.toggle('my-vote', userVotes['public'] === 1);
+            }
 
+            // Кастомные опросы
             let container = document.getElementById('dynamic-polls-container');
             container.innerHTML = '';
             pollData.customPolls.forEach((poll, index) => {
@@ -614,10 +653,17 @@
                     `;
                 }).join('');
                 
+                let isLoggedOut = localStorage.getItem('is_logged_out') === 'true';
+                let user = tg.initDataUnsafe && tg.initDataUnsafe.user;
+                let isAdmin = (!isLoggedOut && user && ADMIN_IDS.includes(user.id)) || (!user && !isLoggedOut);
+
+                let deleteBtnHtml = isAdmin ? `<button class="btn-delete-poll" style="display: block;" onclick="deleteCustomPoll(${index})">${translations[currentLang].btn_delete}</button>` : '';
+
                 card.innerHTML = `
                     <span class="badge">Нове опитування</span>
                     <p style="margin: 8px 0 12px 0; font-weight: 500;">${poll.theme}</p>
                     ${optionsHtml}
+                    ${deleteBtnHtml}
                 `;
                 container.appendChild(card);
             });
@@ -666,8 +712,6 @@
                 alert(currentLang === 'uk' ? '⚠️ Ви вже проголосували в цьому опитуванні!' : '⚠️ Вы уже проголосовали в этом опросе!');
                 return;
             }
-            pollData[pollIndex].customPolls[optionIndex]++; // исправление индексации кастомных опросов
-            // корректный блок для кастомных голосов:
             pollData.customPolls[pollIndex].votes[optionIndex]++;
             userVotes[key] = optionIndex;
 
@@ -675,6 +719,20 @@
             saveData();
             if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
             alert(currentLang === 'uk' ? '✅ Голос зараховано!' : '✅ Голос учтен!');
+        }
+
+        function deleteFixedPoll(type) {
+            if (confirm(currentLang === 'uk' ? 'Ви дійсно хочете видалити це опитування?' : 'Вы действительно хотите удалить этот опрос?')) {
+                pollData[type].active = false;
+                saveData();
+            }
+        }
+
+        function deleteCustomPoll(index) {
+            if (confirm(currentLang === 'uk' ? 'Ви дійсно хочете видалити це опитування?' : 'Вы действительно хотите удалить этот опрос?')) {
+                pollData.customPolls.splice(index, 1);
+                saveData();
+            }
         }
 
         function createNewPoll() {
@@ -739,11 +797,13 @@
         function logoutUser() {
             localStorage.setItem('is_logged_out', 'true');
             initAuth();
+            updatePollUI();
         }
 
         function loginUser() {
             localStorage.setItem('is_logged_out', 'false');
             initAuth();
+            updatePollUI();
         }
         
         function initAuth() {
@@ -754,6 +814,8 @@
             const adminPanel = document.getElementById('admin-results-panel');
             const logoutBtn = document.getElementById('logout-btn');
             const loginBtn = document.getElementById('login-btn');
+            const btnDeleteAnon = document.getElementById('btn-delete-anon');
+            const btnDeletePublic = document.getElementById('btn-delete-public');
 
             if (isLoggedOut) {
                 document.getElementById('user-fullname').innerText = currentLang === 'uk' ? 'Гість (Не авторизовано)' : 'Гость (Не авторизован)';
@@ -763,6 +825,8 @@
                 if (adminPanel) adminPanel.style.display = 'none';
                 if (logoutBtn) logoutBtn.style.display = 'none';
                 if (loginBtn) loginBtn.style.display = 'block';
+                if (btnDeleteAnon) btnDeleteAnon.style.display = 'none';
+                if (btnDeletePublic) btnDeletePublic.style.display = 'none';
             } else if (user) {
                 const fullName = `${user.first_name || ''} ${user.last_name || ''}`.trim() || user.username || 'Жилец';
                 document.getElementById('user-fullname').innerText = fullName;
@@ -775,23 +839,27 @@
                 if (!isAdmin) {
                     if (createTabBtn) createTabBtn.style.display = 'none';
                     if (adminPanel) adminPanel.style.display = 'none';
+                    if (btnDeleteAnon) btnDeleteAnon.style.display = 'none';
+                    if (btnDeletePublic) btnDeletePublic.style.display = 'none';
                     document.querySelector('.user-status').innerText = currentLang === 'uk' ? 'Мешканець' : 'Жилец';
                 } else {
                     if (createTabBtn) createTabBtn.style.display = 'block';
                     if (adminPanel) adminPanel.style.display = 'block';
+                    if (btnDeleteAnon) btnDeleteAnon.style.display = 'block';
+                    if (btnDeletePublic) btnDeletePublic.style.display = 'block';
                     document.querySelector('.user-status').innerText = translations[currentLang].admin_status;
                 }
             } else {
-                // Если открыто в обычном браузере без Telegram
                 document.getElementById('user-fullname').innerText = 'Дмитро Лутак';
                 document.getElementById('user-avatar').innerText = 'Д';
                 if (createTabBtn) createTabBtn.style.display = 'block';
                 if (adminPanel) adminPanel.style.display = 'block';
+                if (btnDeleteAnon) btnDeleteAnon.style.display = 'block';
+                if (btnDeletePublic) btnDeletePublic.style.display = 'block';
                 document.querySelector('.user-status').innerText = translations[currentLang].admin_status;
             }
         }
 
-        // Запуск при загрузке
         document.addEventListener("DOMContentLoaded", () => {
             setLanguage(currentLang);
             initAuth();
