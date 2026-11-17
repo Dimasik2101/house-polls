@@ -328,7 +328,7 @@
             <div class="user-avatar" id="user-avatar">Д</div>
             <div>
                 <div class="user-name" id="user-fullname">Завантаження...</div>
-                <div class="user-status" data-i18n="resident">Мешканець будинку</div>
+                <div class="user-status" id="user-tg-username" style="font-size: 11px; color: var(--hint);">@username</div>
             </div>
         </div>
         <span style="font-size: 11px; background: #2A2A32; color: var(--accent); padding: 4px 8px; border-radius: 6px;" data-i18n="app_badge">Mini App</span>
@@ -395,14 +395,20 @@
 
     <!-- Вкладка 6: Настройки и Профиль -->
     <div id="settings" class="tab-content">
-        <h2 data-i18n="profile_title">Дані мешканця (Квартира та Фото)</h2>
+        <h2 data-i18n="profile_title">Дані мешканця</h2>
         <div class="card">
-            <p style="font-size: 12px; color: var(--hint); margin-top: 0; margin-bottom: 12px;" data-i18n="profile_desc">Вкажіть номер квартири та виберіть фото з галереї:</p>
+            <p style="font-size: 12px; color: var(--hint); margin-top: 0; margin-bottom: 12px;" data-i18n="profile_desc">Вкажіть ваше ім'я, прізвище, номер квартири та фото:</p>
             
-            <label style="font-size: 13px; color: var(--hint);">Номер квартири</label>
-            <input type="text" id="input-flat" placeholder="Наприклад: 42">
+            <label style="font-size: 13px; color: var(--hint);" data-i18n="label_name">Ім'я</label>
+            <input type="text" id="input-name" placeholder="Дмитро">
 
-            <label style="font-size: 13px; color: var(--hint);">Фото профілю (з галереї)</label>
+            <label style="font-size: 13px; color: var(--hint);" data-i18n="label_surname">Прізвище</label>
+            <input type="text" id="input-surname" placeholder="Лутак">
+
+            <label style="font-size: 13px; color: var(--hint);" data-i18n="label_flat">Номер квартири</label>
+            <input type="text" id="input-flat" placeholder="42">
+
+            <label style="font-size: 13px; color: var(--hint);" data-i18n="label_photo">Фото профілю (з галереї)</label>
             <input type="file" id="input-photo-file" accept="image/*">
 
             <button class="btn" onclick="saveFlatProfile()" data-i18n="btn_save_flat">Зберегти профіль</button>
@@ -482,8 +488,12 @@
                 btn_delete: "🗑 Видалити запис",
                 btn_delete_poll: "🗑 Видалити опитування",
                 admin_panel_title: "🛠 Панель адміна: Хто голосував",
-                profile_title: "Дані мешканця (Квартира та Фото)",
-                profile_desc: "Вкажіть номер квартири та виберіть фото з галереї:",
+                profile_title: "Дані мешканця",
+                profile_desc: "Вкажіть ваше ім'я, прізвище, номер квартири та фото:",
+                label_name: "Ім'я",
+                label_surname: "Прізвище",
+                label_flat: "Номер квартири",
+                label_photo: "Фото профілю (з галереї)",
                 btn_save_flat: "Зберегти профіль",
                 settings_title: "Налаштування мови",
                 settings_desc: "Оберіть мову інтерфейсу додатку:",
@@ -523,9 +533,13 @@
                 btn_publish: "Опубликовать опрос",
                 btn_delete: "🗑 Удалить запись",
                 btn_delete_poll: "🗑 Удалить опрос",
-                admin_panel_title: "🛠 Панель админа: Кто голосував",
-                profile_title: "Данные жильца (Квартира и Фото)",
-                profile_desc: "Укажите номер квартиры и выберите фото из галереи:",
+                admin_panel_title: "🛠 Панель админа: Кто голосовал",
+                profile_title: "Данные жильца",
+                profile_desc: "Укажите ваше имя, фамилию, номер квартиры и фото:",
+                label_name: "Имя",
+                label_surname: "Фамилия",
+                label_flat: "Номер квартиры",
+                label_photo: "Фото профиля (из галереи)",
                 btn_save_flat: "Сохранить профиль",
                 settings_title: "Настройки языка",
                 settings_desc: "Выберите язык интерфейса приложения:",
@@ -537,6 +551,8 @@
         };
 
         let currentLang = localStorage.getItem('app_lang') || 'uk';
+        let userName = localStorage.getItem('user_name') || '';
+        let userSurname = localStorage.getItem('user_surname') || '';
         let userFlat = localStorage.getItem('user_flat') || '';
         let userPhoto = localStorage.getItem('user_photo') || '';
 
@@ -549,7 +565,12 @@
         let myVoteHistory = JSON.parse(localStorage.getItem('my_vote_history')) || [];
 
         function saveFlatProfile() {
+            userName = document.getElementById('input-name').value.trim();
+            userSurname = document.getElementById('input-surname').value.trim();
             userFlat = document.getElementById('input-flat').value.trim();
+
+            localStorage.setItem('user_name', userName);
+            localStorage.setItem('user_surname', userSurname);
             localStorage.setItem('user_flat', userFlat);
 
             let fileInput = document.getElementById('input-photo-file');
@@ -768,15 +789,22 @@
             pollData.polls[pollIndex].votes[optionIndex]++;
             userVotes[key] = optionIndex;
 
-            // Записываем имя из Telegram + номер квартиры для открытого голосования
+            // Записываем введенные Имя, Фамилию и Квартиру для открытого голосования
             if (pollData.polls[pollIndex].type !== 'anon') {
                 if (!pollData.polls[pollIndex].voters) pollData.polls[pollIndex].voters = {};
                 let user = tg.initDataUnsafe && tg.initDataUnsafe.user;
-                let rawName = (user && `${user.first_name || ''} ${user.last_name || ''}`.trim()) || (currentLang === 'uk' ? 'Мешканець' : 'Жилец');
-                let flatInfo = userFlat ? ` (кв. ${userFlat})` : '';
-                let fullName = rawName + flatInfo;
+                
+                let fullName = "";
+                if (userName || userSurname) {
+                    fullName = `${userName} ${userSurname}`.trim();
+                } else {
+                    fullName = (user && `${user.first_name || ''} ${user.last_name || ''}`.trim()) || (currentLang === 'uk' ? 'Мешканець' : 'Жилец');
+                }
 
-                pollData.polls[pollIndex].voters[fullName] = optionText;
+                let flatInfo = userFlat ? ` (кв. ${userFlat})` : '';
+                let finalVoterName = fullName + flatInfo;
+
+                pollData.polls[pollIndex].voters[finalVoterName] = optionText;
             }
 
             myVoteHistory.push({ theme: themeText, optionText: optionText });
@@ -895,20 +923,32 @@
             const logoutBtn = document.getElementById('logout-btn');
             const loginBtn = document.getElementById('login-btn');
 
+            let nameInput = document.getElementById('input-name');
+            if (nameInput && userName) nameInput.value = userName;
+
+            let surnameInput = document.getElementById('input-surname');
+            if (surnameInput && userSurname) surnameInput.value = userSurname;
+
             let flatInput = document.getElementById('input-flat');
             if (flatInput && userFlat) flatInput.value = userFlat;
 
             let avatarContainer = document.getElementById('user-avatar');
+            let tgUsernameEl = document.getElementById('user-tg-username');
 
             if (isLoggedOut) {
                 document.getElementById('user-fullname').innerText = currentLang === 'uk' ? 'Гість (Не авторизовано)' : 'Гость (Не авторизован)';
+                tgUsernameEl.innerText = "@guest";
                 avatarContainer.innerHTML = 'Ø';
                 document.querySelector('.user-status').innerText = currentLang === 'uk' ? 'Гість' : 'Гость';
                 if (createTabBtn) createTabBtn.style.display = 'none';
                 if (logoutBtn) logoutBtn.style.display = 'none';
                 if (loginBtn) loginBtn.style.display = 'block';
             } else if (user) {
-                let baseName = `${user.first_name || ''} ${user.last_name || ''}`.trim() || user.username || 'Жилец';
+                let tgNick = user.username ? `@${user.username}` : (user.first_name ? user.first_name : "@telegram");
+                tgUsernameEl.innerText = tgNick;
+
+                let customFullName = `${userName || ''} ${userSurname || ''}`.trim();
+                let baseName = customFullName || `${user.first_name || ''} ${user.last_name || ''}`.trim() || user.username || 'Жилец';
                 let displayName = userFlat ? `${baseName} (кв. ${userFlat})` : baseName;
 
                 document.getElementById('user-fullname').innerText = displayName;
@@ -931,14 +971,16 @@
                     document.querySelector('.user-status').innerText = translations[currentLang].admin_status;
                 }
             } else {
-                let baseName = 'Дмитро Лутак';
+                tgUsernameEl.innerText = "@dimasik";
+                let customFullName = `${userName || ''} ${userSurname || ''}`.trim();
+                let baseName = customFullName || 'Дмитро Лутак';
                 let displayName = userFlat ? `${baseName} (кв. ${userFlat})` : baseName;
                 document.getElementById('user-fullname').innerText = displayName;
                 
                 if (userPhoto) {
                     avatarContainer.innerHTML = `<img src="${userPhoto}" alt="Avatar">`;
                 } else {
-                    avatarContainer.innerHTML = 'Д';
+                    avatarContainer.innerHTML = baseName.charAt(0).toUpperCase();
                 }
 
                 if (createTabBtn) createTabBtn.style.display = 'block';
