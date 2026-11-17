@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="uk">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Опросы дома</title>
+    <title>Опитування будинку</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
@@ -14,6 +14,7 @@
             --hint: #9F9F9F;
             --accent: #CCFF00;
             --btn-text: #121214;
+            --danger: #FF4D4D;
         }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -22,9 +23,47 @@
             margin: 0;
             padding: 16px;
         }
-        h2 { font-size: 20px; margin-bottom: 16px; }
         
-        /* Вкладки (Tabs) */
+        /* Шапка с профилем */
+        .user-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 12px 16px;
+            margin-bottom: 16px;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: var(--accent);
+            color: var(--btn-text);
+            font-weight: 700;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+        .user-name {
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .user-status {
+            font-size: 12px;
+            color: var(--hint);
+        }
+
+        h2 { font-size: 18px; margin-bottom: 16px; }
+        
+        /* Вкладки */
         .tabs {
             display: flex;
             background: var(--card-bg);
@@ -32,24 +71,35 @@
             border-radius: 10px;
             padding: 4px;
             margin-bottom: 16px;
+            gap: 2px;
+            overflow-x: auto;
         }
         .tab {
             flex: 1;
             text-align: center;
-            padding: 8px;
-            font-size: 14px;
+            padding: 8px 4px;
+            font-size: 10px;
             font-weight: 600;
             color: var(--hint);
             border-radius: 8px;
             cursor: pointer;
             transition: 0.2s;
+            white-space: nowrap;
         }
         .tab.active {
             background: var(--accent);
             color: var(--btn-text);
         }
 
-        /* Карточки опросов */
+        /* Содержимое вкладок */
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Карточки */
         .card {
             background: var(--card-bg);
             border: 1px solid var(--card-border);
@@ -67,21 +117,153 @@
             display: inline-block;
             margin-bottom: 8px;
         }
-        .option-row {
+        .badge-anon {
+            background: rgba(204, 255, 0, 0.1);
+            color: var(--accent);
+        }
+        
+        /* Стили для вариантов и прогресс-баров */
+        .option-result {
             background: #121214;
             border: 1px solid var(--card-border);
             border-radius: 8px;
             padding: 12px;
-            margin-top: 8px;
+            margin-top: 10px;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .option-result:hover {
+            border-color: var(--accent);
+        }
+        .option-result.my-vote {
+            border-color: var(--accent);
+            background: rgba(204, 255, 0, 0.05);
+        }
+        .option-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+        }
+        .progress-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            background: rgba(204, 255, 0, 0.1);
+            border-radius: 8px;
+            z-index: 1;
+            transition: width 0.4s ease;
+        }
+
+        /* Панель результатов админа */
+        .admin-panel {
+            margin-top: 16px;
+            border-top: 1px solid var(--card-border);
+            padding-top: 12px;
+            display: none;
+        }
+        .admin-title {
+            font-size: 12px;
+            color: var(--accent);
+            font-weight: 700;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .voter-item {
+            font-size: 12px;
+            color: var(--hint);
+            display: flex;
+            justify-content: space-between;
+            padding: 4px 0;
+            border-bottom: 1px dashed rgba(255,255,255,0.05);
+        }
+        .voter-item span:first-child {
+            color: var(--text);
+        }
+
+        /* Выбор языка */
+        .lang-option {
+            background: #121214;
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            padding: 14px 16px;
+            margin-top: 10px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             cursor: pointer;
             transition: 0.2s;
         }
-        .option-row:hover {
+        .lang-option:hover {
             border-color: var(--accent);
         }
+        .lang-option.selected {
+            border-color: var(--accent);
+            background: rgba(204, 255, 0, 0.05);
+        }
+        .radio-circle {
+            width: 18px;
+            height: 18px;
+            border: 2px solid var(--card-border);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.2s;
+        }
+        .lang-option.selected .radio-circle {
+            border-color: var(--accent);
+        }
+        .radio-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--accent);
+            border-radius: 50%;
+            display: none;
+        }
+        .lang-option.selected .radio-dot {
+            display: block;
+        }
+
+        /* Кнопки выхода / входа */
+        .btn-auth {
+            background: transparent;
+            border: 1px solid var(--danger);
+            color: var(--danger);
+            border-radius: 8px;
+            padding: 12px 16px;
+            font-weight: 600;
+            width: 100%;
+            cursor: pointer;
+            margin-top: 12px;
+            transition: 0.2s;
+        }
+        .btn-auth:hover {
+            background: rgba(255, 77, 77, 0.1);
+        }
+
+        .btn-login {
+            background: transparent;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            border-radius: 8px;
+            padding: 12px 16px;
+            font-weight: 600;
+            width: 100%;
+            cursor: pointer;
+            margin-top: 12px;
+            transition: 0.2s;
+            display: none;
+        }
+        .btn-login:hover {
+            background: rgba(204, 255, 0, 0.1);
+        }
+
         .btn {
             background: var(--accent);
             color: var(--btn-text);
@@ -93,36 +275,519 @@
             cursor: pointer;
             margin-top: 12px;
         }
+        input, textarea {
+            width: 100%;
+            background: #121214;
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            padding: 10px;
+            color: var(--text);
+            margin-top: 6px;
+            margin-bottom: 12px;
+            box-sizing: border-box;
+        }
     </style>
 </head>
 <body>
 
-    <!-- Вкладки интерфейса -->
+    <!-- Шапка профиля -->
+    <div class="user-header">
+        <div class="user-info">
+            <div class="user-avatar" id="user-avatar">Д</div>
+            <div>
+                <div class="user-name" id="user-fullname">Завантаження...</div>
+                <div class="user-status" data-i18n="resident">Мешканець будинку</div>
+            </div>
+        </div>
+        <span style="font-size: 11px; background: #2A2A32; color: var(--accent); padding: 4px 8px; border-radius: 6px;" data-i18n="app_badge">Mini App</span>
+    </div>
+
+    <!-- Навигация (Вкладки) -->
     <div class="tabs">
-        <div class="tab active">Активные</div>
-        <div class="tab">Архив</div>
-        <div class="tab">+ Создать</div>
+        <div class="tab active" onclick="switchTab('anon', this)" data-i18n="tab_anon">🕵️ Анонімні</div>
+        <div class="tab" onclick="switchTab('public', this)" data-i18n="tab_public">👥 Публічні</div>
+        <div class="tab" onclick="switchTab('my-votes', this)" data-i18n="tab_my_votes">📋 Мої голоси</div>
+        <div class="tab" onclick="switchTab('archive', this)" data-i18n="tab_archive">Архів</div>
+        <div class="tab" id="tab-create-btn" onclick="switchTab('create', this)" data-i18n="tab_create">+ Створити</div>
+        <div class="tab" onclick="switchTab('settings', this)" data-i18n="tab_settings">⚙️ Налаштування</div>
     </div>
 
-    <h2>Активные опросы дома</h2>
+    <!-- Вкладка 1: Анонимные опросы -->
+    <div id="anon" class="tab-content active">
+        <h2 data-i18n="anon_title">Анонімні опитування</h2>
+        <div class="card">
+            <span class="badge badge-anon" data-i18n="badge_anon">Повністю анонімно</span>
+            <p style="margin: 8px 0 12px 0; font-weight: 500;" data-i18n="anon_question">Чи потрібна додаткова охорона вночі?</p>
+            
+            <div class="option-result" id="anon-opt-0" onclick="vote('anon', 0, 'Чи потрібна додаткова охорона вночі?', 'Так, потрібна')">
+                <div class="progress-bar" id="anon-bar-0" style="width: 70%;"></div>
+                <div class="option-info">
+                    <span data-i18n="anon_opt1">Так, потрібна</span>
+                    <strong id="anon-votes-0">21 (70%)</strong>
+                </div>
+            </div>
 
-    <!-- Пример карточки опроса -->
-    <div class="card">
-        <span class="badge">Открытый опрос</span>
-        <p style="margin: 8px 0 12px 0; font-weight: 500;">Установка шлагбаума на въезде во двор?</p>
-        
-        <div class="option-row" onclick="alert('Голос учтен!')">
-            <span>За установку шлагбаума</span>
-            <strong style="color: var(--accent);">14 голосов</strong>
+            <div class="option-result" id="anon-opt-1" onclick="vote('anon', 1, 'Чи потрібна додаткова охорона вночі?', 'Ні, достатньо камер')">
+                <div class="progress-bar" id="anon-bar-1" style="width: 30%; background: rgba(159,159,159,0.1);"></div>
+                <div class="option-info">
+                    <span data-i18n="anon_opt2">Ні, достатньо камер</span>
+                    <strong id="anon-votes-1" style="color: var(--hint);">9 (30%)</strong>
+                </div>
+            </div>
         </div>
-        
-        <div class="option-row" onclick="alert('Голос учтен!')">
-            <span>Против</span>
-            <strong style="color: var(--hint);">3 голоса</strong>
-        </div>
-
-        <button class="btn" onclick="alert('Переход к деталям опроса')">Посмотреть детально</button>
     </div>
 
+    <!-- Вкладка 2: Публичные опросы -->
+    <div id="public" class="tab-content">
+        <h2 data-i18n="public_title">Публічні опитування</h2>
+        
+        <div class="card">
+            <span class="badge" data-i18n="badge_open">Відкрите опитування</span>
+            <p style="margin: 8px 0 12px 0; font-weight: 500;" data-i18n="poll_question">Встановлення шлагбаума на в'їзді у двір?</p>
+            
+            <div class="option-result" id="public-opt-0" onclick="vote('public', 0, 'Встановлення шлагбаума на в\'їзді у двір?', 'За встановлення шлагбаума')">
+                <div class="progress-bar" id="public-bar-0" style="width: 82%;"></div>
+                <div class="option-info">
+                    <span data-i18n="poll_opt1">За встановлення шлагбаума</span>
+                    <strong id="public-votes-0">14 (82%)</strong>
+                </div>
+            </div>
+
+            <div class="option-result" id="public-opt-1" onclick="vote('public', 1, 'Встановлення шлагбаума на в\'їзді у двір?', 'Проти')">
+                <div class="progress-bar" id="public-bar-1" style="width: 18%; background: rgba(159,159,159,0.1);"></div>
+                <div class="option-info">
+                    <span data-i18n="poll_opt2">Проти</span>
+                    <strong id="public-votes-1" style="color: var(--hint);">3 (18%)</strong>
+                </div>
+            </div>
+
+            <div id="admin-results-panel" class="admin-panel">
+                <div class="admin-title" data-i18n="admin_panel_title">🛠 Панель адміна: Хто голосував</div>
+                <div class="voter-item">
+                    <span>Дмитро Лутак</span>
+                    <span style="color: var(--accent);">За встановлення</span>
+                </div>
+                <div class="voter-item">
+                    <span>Олександр Петренко</span>
+                    <span style="color: var(--accent);">За встановлення</span>
+                </div>
+                <div class="voter-item">
+                    <span>Марія Коваль</span>
+                    <span style="color: var(--hint);">Проти</span>
+                </div>
+                <div style="font-size: 11px; color: var(--hint); margin-top: 8px; text-align: right;" data-i18n="total_votes">Всього проголосувало: 17 мешканців</div>
+            </div>
+        </div>
+
+        <div id="dynamic-polls-container"></div>
+    </div>
+
+    <!-- Вкладка 3: Мои голосы (История голосований пользователя) -->
+    <div id="my-votes" class="tab-content">
+        <h2 data-i18n="my_votes_title">Історія ваших голосів</h2>
+        <div id="my-votes-container">
+            <p style="font-size: 13px; color: var(--hint);" data-i18n="no_votes">Ви поки що не взяли участь в жодному опитуванні.</p>
+        </div>
+    </div>
+
+    <!-- Вкладка 4: Архив -->
+    <div id="archive" class="tab-content">
+        <h2 data-i18n="archive_title">Архів опитувань</h2>
+        <div class="card">
+            <span class="badge" style="background: #2A2A32; color: var(--hint);" data-i18n="badge_closed">Завершено</span>
+            <p style="margin: 8px 0 12px 0; font-weight: 500;" data-i18n="archive_q">Ремонт під'їзних дверей (листопад)</p>
+            <p style="font-size: 13px; color: var(--hint); margin: 0;" data-i18n="archive_res">Підсумок: Вирішено робити (89% за)</p>
+        </div>
+    </div>
+
+    <!-- Вкладка 5: Создать опрос -->
+    <div id="create" class="tab-content">
+        <h2 data-i18n="create_title">Нове опитування</h2>
+        <div class="card">
+            <label style="font-size: 13px; color: var(--hint);" data-i18n="label_theme">Тема опитування</label>
+            <input type="text" id="input-theme" placeholder="Наприклад: Прибирання снігу у дворі">
+            
+            <label style="font-size: 13px; color: var(--hint);" data-i18n="label_options">Варіанти відповіді (через кому)</label>
+            <textarea id="input-options" placeholder="За, Проти, Утримаюсь"></textarea>
+
+            <button class="btn" onclick="createNewPoll()" data-i18n="btn_publish">Опублікувати опитування</button>
+        </div>
+    </div>
+
+    <!-- Вкладка 6: Настройки -->
+    <div id="settings" class="tab-content">
+        <h2 data-i18n="settings_title">Налаштування мови</h2>
+        <div class="card">
+            <p style="font-size: 13px; color: var(--hint); margin-top: 0; margin-bottom: 12px;" data-i18n="settings_desc">Оберіть мову інтерфейсу додатку:</p>
+            
+            <div class="lang-option selected" id="opt-uk" onclick="setLanguage('uk')">
+                <span style="font-weight: 600;">🇺🇦 Українська</span>
+                <div class="radio-circle"><div class="radio-dot"></div></div>
+            </div>
+
+            <div class="lang-option" id="opt-ru" onclick="setLanguage('ru')">
+                <span style="font-weight: 600;">🇷🇺 Русский</span>
+                <div class="radio-circle"><div class="radio-dot"></div></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3 style="font-size: 14px; margin-top: 0; margin-bottom: 8px;" data-i18n="acc_title">Керування акаунтом</h3>
+            <p style="font-size: 12px; color: var(--hint); margin-bottom: 12px;" data-i18n="acc_desc">Ви можете вийти з поточного профілю або увійти знову через Telegram.</p>
+            
+            <button class="btn-auth" id="logout-btn" onclick="logoutUser()" data-i18n="btn_logout">🚪 Вийти з акаунта</button>
+            <button class="btn-login" id="login-btn" onclick="loginUser()" data-i18n="btn_login">🔑 Увійти через Telegram</button>
+        </div>
+    </div>
+
+    <script>
+        const ADMIN_IDS = [
+            1995828547
+        ];
+
+        const translations = {
+            uk: {
+                resident: "Мешканець будинку",
+                admin_status: "🛠 Адміністратор",
+                app_badge: "Mini App",
+                tab_anon: "🕵️ Анонімні",
+                tab_public: "👥 Публічні",
+                tab_my_votes: "📋 Мої голоси",
+                tab_archive: "Архів",
+                tab_create: "+ Створити",
+                tab_settings: "⚙️ Налаштування",
+                anon_title: "Анонімні опитування",
+                badge_anon: "Повністю анонімно",
+                anon_question: "Чи потрібна додаткова охорона вночі?",
+                anon_opt1: "Так, потрібна",
+                anon_opt2: "Ні, достатньо камер",
+                public_title: "Публічні опитування",
+                badge_open: "Відкрите опитування",
+                poll_question: "Встановлення шлагбаума на в'їзді у двір?",
+                poll_opt1: "За встановлення шлагбаума",
+                poll_opt2: "Проти",
+                my_votes_title: "Історія ваших голосів",
+                no_votes: "Ви поки що не взяли участь в жодному опитуванні.",
+                voted_for: "Ваш вибір:",
+                admin_panel_title: "🛠 Панель адміна: Хто голосував",
+                total_votes: "Всього проголосувало: 17 мешканців",
+                archive_title: "Архів опитувань",
+                badge_closed: "Завершено",
+                archive_q: "Ремонт під'їзних дверей (листопад)",
+                archive_res: "Підсумок: Вирішено робити (89% за)",
+                create_title: "Нове опитування",
+                label_theme: "Тема опитування",
+                label_options: "Варіанти відповіді (через кому)",
+                btn_publish: "Опублікувати опитування",
+                settings_title: "Налаштування мови",
+                settings_desc: "Оберіть мову інтерфейсу додатку:",
+                acc_title: "Керування акаунтом",
+                acc_desc: "Ви можете вийти з поточного профілю або увійти знову через Telegram.",
+                btn_logout: "🚪 Вийти з акаунта",
+                btn_login: "🔑 Увійти через Telegram"
+            },
+            ru: {
+                resident: "Жилец дома",
+                admin_status: "🛠 Администратор",
+                app_badge: "Mini App",
+                tab_anon: "🕵️ Анонимные",
+                tab_public: "👥 Публичные",
+                tab_my_votes: "📋 Мои голосы",
+                tab_archive: "Архив",
+                tab_create: "+ Создать",
+                tab_settings: "⚙️ Настройки",
+                anon_title: "Анонимные опросы",
+                badge_anon: "Полностью анонимно",
+                anon_question: "Нужна ли дополнительная охрана ночью?",
+                anon_opt1: "Да, нужна",
+                anon_opt2: "Нет, достаточно камер",
+                public_title: "Публичные опросы",
+                badge_open: "Открытый опрос",
+                poll_question: "Установка шлагбаума на въезде во двор?",
+                poll_opt1: "За установку шлагбаума",
+                poll_opt2: "Против",
+                my_votes_title: "История ваших голосов",
+                no_votes: "Вы пока не приняли участие ни в одном опросе.",
+                voted_for: "Ваш выбор:",
+                admin_panel_title: "🛠 Панель админа: Кто голосовал",
+                total_votes: "Всего проголосовало: 17 жителей",
+                archive_title: "Архив опросов",
+                badge_closed: "Завершен",
+                archive_q: "Ремонт подъездных дверей (ноябрь)",
+                archive_res: "Итог: Решено делать (89% за)",
+                create_title: "Новый опрос",
+                label_theme: "Тема опроса",
+                label_options: "Варианты ответа (через запятую)",
+                btn_publish: "Опубликовать опрос",
+                settings_title: "Настройки языка",
+                settings_desc: "Выберите язык интерфейса приложения:",
+                acc_title: "Управление аккаунтом",
+                acc_desc: "Вы можете выйти из текущего профиля или войти снова через Telegram.",
+                btn_logout: "🚪 Выйти из аккаунта",
+                btn_login: "🔑 Войти через Telegram"
+            }
+        };
+
+        let currentLang = localStorage.getItem('app_lang') || 'uk';
+
+        let pollData = JSON.parse(localStorage.getItem('poll_data')) || {
+            anon: { votes: [21, 9] },
+            public: { votes: [14, 3] },
+            customPolls: []
+        };
+
+        let userVotes = JSON.parse(localStorage.getItem('user_votes')) || {};
+        let myVoteHistory = JSON.parse(localStorage.getItem('my_vote_history')) || [];
+
+        function saveData() {
+            localStorage.setItem('poll_data', JSON.stringify(pollData));
+            localStorage.setItem('user_votes', JSON.stringify(userVotes));
+            localStorage.setItem('my_vote_history', JSON.stringify(myVoteHistory));
+            updatePollUI();
+            updateMyVotesUI();
+        }
+
+        function updatePollUI() {
+            // Анонимный
+            let anonTotal = pollData.anon.votes.reduce((a, b) => a + b, 0);
+            let anonP0 = anonTotal ? Math.round((pollData.anon.votes[0] / anonTotal) * 100) : 0;
+            let anonP1 = 100 - anonP0;
+            
+            document.getElementById('anon-bar-0').style.width = anonP0 + '%';
+            document.getElementById('anon-bar-1').style.width = anonP1 + '%';
+            document.getElementById('anon-votes-0').innerText = `${pollData.anon.votes[0]} (${anonP0}%)`;
+            document.getElementById('anon-votes-1').innerText = `${pollData.anon.votes[1]} (${anonP1}%)`;
+
+            document.getElementById('anon-opt-0').classList.toggle('my-vote', userVotes['anon'] === 0);
+            document.getElementById('anon-opt-1').classList.toggle('my-vote', userVotes['anon'] === 1);
+
+            // Публичный
+            let pubTotal = pollData.public.votes.reduce((a, b) => a + b, 0);
+            let pubP0 = pubTotal ? Math.round((pollData.public.votes[0] / pubTotal) * 100) : 0;
+            let pubP1 = 100 - pubP0;
+
+            document.getElementById('public-bar-0').style.width = pubP0 + '%';
+            document.getElementById('public-bar-1').style.width = pubP1 + '%';
+            document.getElementById('public-votes-0').innerText = `${pollData.public.votes[0]} (${pubP0}%)`;
+            document.getElementById('public-votes-1').innerText = `${pollData.public.votes[1]} (${pubP1}%)`;
+
+            document.getElementById('public-opt-0').classList.toggle('my-vote', userVotes['public'] === 0);
+            document.getElementById('public-opt-1').classList.toggle('my-vote', userVotes['public'] === 1);
+
+            // Кастомные
+            let container = document.getElementById('dynamic-polls-container');
+            container.innerHTML = '';
+            pollData.customPolls.forEach((poll, index) => {
+                let card = document.createElement('div');
+                card.className = 'card';
+                let totalC = poll.votes.reduce((a, b) => a + b, 0);
+
+                let optionsHtml = poll.options.map((opt, i) => {
+                    let percent = totalC ? Math.round((poll.votes[i] / totalC) * 100) : 0;
+                    let isMyVote = userVotes[`custom_${index}`] === i;
+                    return `
+                        <div class="option-result ${isMyVote ? 'my-vote' : ''}" onclick="voteCustom(${index}, '${poll.theme.replace(/'/g, "\\'")}', ${i}, '${opt.replace(/'/g, "\\'")}')">
+                            <div class="progress-bar" style="width: ${percent}%;"></div>
+                            <div class="option-info">
+                                <span>${opt}</span>
+                                <strong>${poll.votes[i]} (${percent}%)</strong>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+                
+                card.innerHTML = `
+                    <span class="badge">Нове опитування</span>
+                    <p style="margin: 8px 0 12px 0; font-weight: 500;">${poll.theme}</p>
+                    ${optionsHtml}
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function updateMyVotesUI() {
+            let container = document.getElementById('my-votes-container');
+            if (myVoteHistory.length === 0) {
+                container.innerHTML = `<p style="font-size: 13px; color: var(--hint);" data-i18n="no_votes">${translations[currentLang].no_votes}</p>`;
+                return;
+            }
+
+            container.innerHTML = '';
+            myVoteHistory.forEach(item => {
+                let card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <span class="badge" style="background: rgba(204,255,0,0.1); color: var(--accent);">✅ ${translations[currentLang].voted_for}</span>
+                    <p style="margin: 6px 0 8px 0; font-weight: 500; font-size: 15px;">${item.theme}</p>
+                    <div style="background: #121214; border: 1px solid var(--card-border); border-radius: 8px; padding: 10px; font-size: 13px; display: flex; justify-content: space-between; align-items: center;">
+                        <span style="color: var(--hint);">${item.optionText}</span>
+                        <strong style="color: var(--accent);">✔ Проголосовано</strong>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function vote(type, index, themeText, optionText) {
+            if (userVotes[type] !== undefined) {
+                alert(currentLang === 'uk' ? '⚠️ Ви вже проголосували в цьому опитуванні!' : '⚠️ Вы уже проголосовали в этом опросе!');
+                return;
+            }
+            pollData[type].votes[index]++;
+            userVotes[type] = index;
+
+            // Добавляем в историю
+            myVoteHistory.push({ theme: themeText, optionText: optionText });
+            saveData();
+            alert(currentLang === 'uk' ? '✅ Голос зараховано!' : '✅ Голос учтен!');
+        }
+
+        function voteCustom(pollIndex, themeText, optionIndex, optionText) {
+            let key = `custom_${pollIndex}`;
+            if (userVotes[key] !== undefined) {
+                alert(currentLang === 'uk' ? '⚠️ Ви вже проголосували в цьому опитуванні!' : '⚠️ Вы уже проголосовали в этом опросе!');
+                return;
+            }
+            pollData.customPolls[pollIndex].votes[optionIndex]++;
+            userVotes[key] = optionIndex;
+
+            myVoteHistory.push({ theme: themeText, optionText: optionText });
+            saveData();
+            alert(currentLang === 'uk' ? '✅ Голос зараховано!' : '✅ Голос учтен!');
+        }
+
+        function createNewPoll() {
+            let theme = document.getElementById('input-theme').value.trim();
+            let optionsText = document.getElementById('input-options').value.trim();
+
+            if (!theme || !optionsText) {
+                alert(currentLang === 'uk' ? 'Будь ласка, заповніть усі поля!' : 'Пожалуйста, заполните все поля!');
+                return;
+            }
+
+            let options = optionsText.split(',').map(o => o.trim()).filter(o => o.length > 0);
+            if (options.length < 2) {
+                alert(currentLang === 'uk' ? 'Потрібно щонайменше 2 варіанти!' : 'Нужно минимум 2 варианта!');
+                return;
+            }
+
+            pollData.customPolls.push({
+                theme: theme,
+                options: options,
+                votes: new Array(options.length).fill(0)
+            });
+
+            saveData();
+            document.getElementById('input-theme').value = '';
+            document.getElementById('input-options').value = '';
+
+            alert(currentLang === 'uk' ? 'Опитування успішно створено!' : 'Опрос успешно создан!');
+            switchTab('public', document.querySelectorAll('.tab')[1]);
+        }
+
+        function setLanguage(lang) {
+            currentLang = lang;
+            localStorage.setItem('app_lang', lang);
+            document.getElementById('opt-uk').classList.toggle('selected', lang === 'uk');
+            document.getElementById('opt-ru').classList.toggle('selected', lang === 'ru');
+            updateTexts();
+        }
+
+        function updateTexts() {
+            const t = translations[currentLang];
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (t[key]) el.innerText = t[key];
+            });
+            const isLoggedOut = localStorage.getItem('is_logged_out') === 'true';
+            const user = window.Telegram.WebApp.initDataUnsafe && window.Telegram.WebApp.initDataUnsafe.user;
+            
+            if (!isLoggedOut && user && ADMIN_IDS.includes(user.id)) {
+                document.querySelector('.user-status').innerText = t.admin_status;
+            } else if (!isLoggedOut && user) {
+                document.querySelector('.user-status').innerText = currentLang === 'uk' ? 'Мешканець' : 'Жилец';
+            } else {
+                document.querySelector('.user-status').innerText = currentLang === 'uk' ? 'Гість' : 'Гость';
+            }
+
+            document.getElementById('input-theme').placeholder = currentLang === 'uk' ? "Наприклад: Прибирання снігу у дворі" : "Например: Уборка снега во дворе";
+            document.getElementById('input-options').placeholder = currentLang === 'uk' ? "За, Проти, Утримаюсь" : "За, Против, Воздержись";
+            updateMyVotesUI();
+        }
+
+        const tg = window.Telegram.WebApp;
+        tg.ready();
+        
+        function initAuth() {
+            const user = tg.initDataUnsafe && tg.initDataUnsafe.user;
+            const isLoggedOut = localStorage.getItem('is_logged_out') === 'true';
+            
+            const createTabBtn = document.getElementById('tab-create-btn');
+            const adminPanel = document.getElementById('admin-results-panel');
+            const logoutBtn = document.getElementById('logout-btn');
+            const loginBtn = document.getElementById('login-btn');
+
+            if (isLoggedOut) {
+                document.getElementById('user-fullname').innerText = currentLang === 'uk' ? 'Гість (Не авторизовано)' : 'Гость (Не авторизован)';
+                document.getElementById('user-avatar').innerText = 'Ø';
+                document.querySelector('.user-status').innerText = currentLang === 'uk' ? 'Гість' : 'Гость';
+                if (createTabBtn) createTabBtn.style.display = 'none';
+                if (adminPanel) adminPanel.style.display = 'none';
+                if (logoutBtn) logoutBtn.style.display = 'none';
+                if (loginBtn) loginBtn.style.display = 'block';
+            } else if (user) {
+                const fullName = `${user.first_name || ''} ${user.last_name || ''}`.trim() || user.username || 'Жилец';
+                document.getElementById('user-fullname').innerText = fullName;
+                document.getElementById('user-avatar').innerText = fullName.charAt(0).toUpperCase();
+
+                const isAdmin = ADMIN_IDS.includes(user.id);
+                if (logoutBtn) logoutBtn.style.display = 'block';
+                if (loginBtn) loginBtn.style.display = 'none';
+
+                if (!isAdmin) {
+                    if (createTabBtn) createTabBtn.style.display = 'none';
+                    if (adminPanel) adminPanel.style.display = 'none';
+                    document.querySelector('.user-status').innerText = currentLang === 'uk' ? 'Мешканець' : 'Жилец';
+                } else {
+                    if (createTabBtn) createTabBtn.style.display = 'block';
+                    if (adminPanel) adminPanel.style.display = 'block';
+                    document.querySelector('.user-status').innerText = translations[currentLang].admin_status;
+                }
+            } else {
+                document.getElementById('user-fullname').innerText = 'Гость (Test Admin)';
+                document.getElementById('user-avatar').innerText = 'G';
+                if (adminPanel) adminPanel.style.display = 'block';
+                if (logoutBtn) logoutBtn.style.display = 'none';
+                if (loginBtn) loginBtn.style.display = 'block';
+                document.querySelector('.user-status':not(.user-header))?.innerText = translations[currentLang].admin_status;
+            }
+        }
+
+        function logoutUser() {
+            localStorage.setItem('is_logged_out', 'true');
+            initAuth();
+            alert(currentLang === 'uk' ? 'Ви вийшли з акаунта.' : 'Вы вышли из аккаунта.');
+        }
+
+        function loginUser() {
+            localStorage.removeItem('is_logged_out');
+            initAuth();
+            alert(currentLang === 'uk' ? 'Успішний вхід!' : 'Успешный вход!');
+        }
+
+        // Запуск при загрузке
+        setLanguage(currentLang);
+        initAuth();
+        updatePollUI();
+        updateMyVotesUI();
+
+        function switchTab(tabId, element) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            
+            element.classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+        }
+    </script>
 </body>
 </html>
