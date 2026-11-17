@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Опитування будинку</title>
+    <!-- Официальный скрипт Telegram WebApp -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
@@ -382,7 +383,7 @@
         <div id="dynamic-polls-container"></div>
     </div>
 
-    <!-- Вкладка 3: Мои голосы (История голосований пользователя) -->
+    <!-- Вкладка 3: Мои голосы -->
     <div id="my-votes" class="tab-content">
         <h2 data-i18n="my_votes_title">Історія ваших голосів</h2>
         <div id="my-votes-container">
@@ -441,6 +442,15 @@
     </div>
 
     <script>
+        // Инициализация Telegram WebApp с принудительным развертыванием
+        const tg = window.Telegram.WebApp;
+        try {
+            tg.expand();
+            tg.ready();
+        } catch (e) {
+            console.log("Запущено в браузере вне Telegram");
+        }
+
         const ADMIN_IDS = [
             1995828547
         ];
@@ -539,6 +549,17 @@
         let userVotes = JSON.parse(localStorage.getItem('user_votes')) || {};
         let myVoteHistory = JSON.parse(localStorage.getItem('my_vote_history')) || [];
 
+        function switchTab(tabId, element) {
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.getElementById(tabId).classList.add('active');
+            element.classList.add('active');
+        }
+
         function saveData() {
             localStorage.setItem('poll_data', JSON.stringify(pollData));
             localStorage.setItem('user_votes', JSON.stringify(userVotes));
@@ -548,7 +569,6 @@
         }
 
         function updatePollUI() {
-            // Анонимный
             let anonTotal = pollData.anon.votes.reduce((a, b) => a + b, 0);
             let anonP0 = anonTotal ? Math.round((pollData.anon.votes[0] / anonTotal) * 100) : 0;
             let anonP1 = 100 - anonP0;
@@ -561,7 +581,6 @@
             document.getElementById('anon-opt-0').classList.toggle('my-vote', userVotes['anon'] === 0);
             document.getElementById('anon-opt-1').classList.toggle('my-vote', userVotes['anon'] === 1);
 
-            // Публичный
             let pubTotal = pollData.public.votes.reduce((a, b) => a + b, 0);
             let pubP0 = pubTotal ? Math.round((pollData.public.votes[0] / pubTotal) * 100) : 0;
             let pubP1 = 100 - pubP0;
@@ -574,7 +593,6 @@
             document.getElementById('public-opt-0').classList.toggle('my-vote', userVotes['public'] === 0);
             document.getElementById('public-opt-1').classList.toggle('my-vote', userVotes['public'] === 1);
 
-            // Кастомные
             let container = document.getElementById('dynamic-polls-container');
             container.innerHTML = '';
             pollData.customPolls.forEach((poll, index) => {
@@ -636,9 +654,9 @@
             pollData[type].votes[index]++;
             userVotes[type] = index;
 
-            // Добавляем в историю
             myVoteHistory.push({ theme: themeText, optionText: optionText });
             saveData();
+            if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
             alert(currentLang === 'uk' ? '✅ Голос зараховано!' : '✅ Голос учтен!');
         }
 
@@ -648,11 +666,14 @@
                 alert(currentLang === 'uk' ? '⚠️ Ви вже проголосували в цьому опитуванні!' : '⚠️ Вы уже проголосовали в этом опросе!');
                 return;
             }
+            pollData[pollIndex].customPolls[optionIndex]++; // исправление индексации кастомных опросов
+            // корректный блок для кастомных голосов:
             pollData.customPolls[pollIndex].votes[optionIndex]++;
             userVotes[key] = optionIndex;
 
             myVoteHistory.push({ theme: themeText, optionText: optionText });
             saveData();
+            if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
             alert(currentLang === 'uk' ? '✅ Голос зараховано!' : '✅ Голос учтен!');
         }
 
@@ -700,7 +721,7 @@
                 if (t[key]) el.innerText = t[key];
             });
             const isLoggedOut = localStorage.getItem('is_logged_out') === 'true';
-            const user = window.Telegram.WebApp.initDataUnsafe && window.Telegram.WebApp.initDataUnsafe.user;
+            const user = tg.initDataUnsafe && tg.initDataUnsafe.user;
             
             if (!isLoggedOut && user && ADMIN_IDS.includes(user.id)) {
                 document.querySelector('.user-status').innerText = t.admin_status;
@@ -715,8 +736,15 @@
             updateMyVotesUI();
         }
 
-        const tg = window.Telegram.WebApp;
-        tg.ready();
+        function logoutUser() {
+            localStorage.setItem('is_logged_out', 'true');
+            initAuth();
+        }
+
+        function loginUser() {
+            localStorage.setItem('is_logged_out', 'false');
+            initAuth();
+        }
         
         function initAuth() {
             const user = tg.initDataUnsafe && tg.initDataUnsafe.user;
@@ -754,40 +782,21 @@
                     document.querySelector('.user-status').innerText = translations[currentLang].admin_status;
                 }
             } else {
-                document.getElementById('user-fullname').innerText = 'Гость (Test Admin)';
-                document.getElementById('user-avatar').innerText = 'G';
+                // Если открыто в обычном браузере без Telegram
+                document.getElementById('user-fullname').innerText = 'Дмитро Лутак';
+                document.getElementById('user-avatar').innerText = 'Д';
+                if (createTabBtn) createTabBtn.style.display = 'block';
                 if (adminPanel) adminPanel.style.display = 'block';
-                if (logoutBtn) logoutBtn.style.display = 'none';
-                if (loginBtn) loginBtn.style.display = 'block';
-                document.querySelector('.user-status':not(.user-header))?.innerText = translations[currentLang].admin_status;
+                document.querySelector('.user-status').innerText = translations[currentLang].admin_status;
             }
         }
 
-        function logoutUser() {
-            localStorage.setItem('is_logged_out', 'true');
-            initAuth();
-            alert(currentLang === 'uk' ? 'Ви вийшли з акаунта.' : 'Вы вышли из аккаунта.');
-        }
-
-        function loginUser() {
-            localStorage.removeItem('is_logged_out');
-            initAuth();
-            alert(currentLang === 'uk' ? 'Успішний вхід!' : 'Успешный вход!');
-        }
-
         // Запуск при загрузке
-        setLanguage(currentLang);
-        initAuth();
-        updatePollUI();
-        updateMyVotesUI();
-
-        function switchTab(tabId, element) {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            
-            element.classList.add('active');
-            document.getElementById(tabId).classList.add('active');
-        }
+        document.addEventListener("DOMContentLoaded", () => {
+            setLanguage(currentLang);
+            initAuth();
+            updatePollUI();
+        });
     </script>
 </body>
 </html>
