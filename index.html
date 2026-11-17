@@ -52,6 +52,12 @@
             align-items: center;
             justify-content: center;
             font-size: 16px;
+            overflow: hidden;
+        }
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
         .user-name {
             font-size: 14px;
@@ -306,6 +312,12 @@
             margin-bottom: 12px;
             box-sizing: border-box;
         }
+        input[type="file"] {
+            padding: 6px;
+            color: var(--hint);
+            font-size: 13px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -381,9 +393,22 @@
         </div>
     </div>
 
-    <!-- Вкладка 6: Настройки -->
+    <!-- Вкладка 6: Настройки и Профиль -->
     <div id="settings" class="tab-content">
-        <h2 data-i18n="settings_title">Налаштування мови</h2>
+        <h2 data-i18n="profile_title">Дані мешканця (Квартира та Фото)</h2>
+        <div class="card">
+            <p style="font-size: 12px; color: var(--hint); margin-top: 0; margin-bottom: 12px;" data-i18n="profile_desc">Вкажіть номер квартири та виберіть фото з галереї:</p>
+            
+            <label style="font-size: 13px; color: var(--hint);">Номер квартири</label>
+            <input type="text" id="input-flat" placeholder="Наприклад: 42">
+
+            <label style="font-size: 13px; color: var(--hint);">Фото профілю (з галереї)</label>
+            <input type="file" id="input-photo-file" accept="image/*">
+
+            <button class="btn" onclick="saveFlatProfile()" data-i18n="btn_save_flat">Зберегти профіль</button>
+        </div>
+
+        <h2 data-i18n="settings_title" style="margin-top: 24px;">Налаштування мови</h2>
         <div class="card">
             <p style="font-size: 13px; color: var(--hint); margin-top: 0; margin-bottom: 12px;" data-i18n="settings_desc">Оберіть мову інтерфейсу додатку:</p>
             
@@ -457,6 +482,9 @@
                 btn_delete: "🗑 Видалити запис",
                 btn_delete_poll: "🗑 Видалити опитування",
                 admin_panel_title: "🛠 Панель адміна: Хто голосував",
+                profile_title: "Дані мешканця (Квартира та Фото)",
+                profile_desc: "Вкажіть номер квартири та виберіть фото з галереї:",
+                btn_save_flat: "Зберегти профіль",
                 settings_title: "Налаштування мови",
                 settings_desc: "Оберіть мову інтерфейсу додатку:",
                 acc_title: "Керування акаунтом",
@@ -495,7 +523,10 @@
                 btn_publish: "Опубликовать опрос",
                 btn_delete: "🗑 Удалить запись",
                 btn_delete_poll: "🗑 Удалить опрос",
-                admin_panel_title: "🛠 Панель админа: Кто голосовал",
+                admin_panel_title: "🛠 Панель админа: Кто голосував",
+                profile_title: "Данные жильца (Квартира и Фото)",
+                profile_desc: "Укажите номер квартиры и выберите фото из галереи:",
+                btn_save_flat: "Сохранить профиль",
                 settings_title: "Настройки языка",
                 settings_desc: "Выберите язык интерфейса приложения:",
                 acc_title: "Управление аккаунтом",
@@ -506,6 +537,8 @@
         };
 
         let currentLang = localStorage.getItem('app_lang') || 'uk';
+        let userFlat = localStorage.getItem('user_flat') || '';
+        let userPhoto = localStorage.getItem('user_photo') || '';
 
         let pollData = {
             polls: [],
@@ -515,19 +548,34 @@
         let userVotes = JSON.parse(localStorage.getItem('user_votes')) || {};
         let myVoteHistory = JSON.parse(localStorage.getItem('my_vote_history')) || [];
 
+        function saveFlatProfile() {
+            userFlat = document.getElementById('input-flat').value.trim();
+            localStorage.setItem('user_flat', userFlat);
+
+            let fileInput = document.getElementById('input-photo-file');
+            if (fileInput.files && fileInput.files[0]) {
+                let reader = new FileReader();
+                reader.onload = function(e) {
+                    userPhoto = e.target.result;
+                    localStorage.setItem('user_photo', userPhoto);
+                    initAuth();
+                    alert(currentLang === 'uk' ? '✅ Профіль та фото успішно збережено!' : '✅ Профиль и фото успешно сохранены!');
+                };
+                reader.readAsDataURL(fileInput.files[0]);
+            } else {
+                initAuth();
+                alert(currentLang === 'uk' ? '✅ Профіль успішно збережено!' : '✅ Профиль успешно сохранен!');
+            }
+        }
+
         async function fetchCloudData() {
             try {
                 let response = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
                     headers: { 'X-Access-Key': API_KEY }
                 });
                 let data = await response.json();
-                if (data && data.record) {
-                    // Поддержка старого и нового формата
-                    if (Array.isArray(data.record.polls)) {
-                        pollData = data.record;
-                    } else {
-                        pollData = { polls: [], archive: [] };
-                    }
+                if (data && data.record && Array.isArray(data.record.polls)) {
+                    pollData = data.record;
                 }
             } catch (e) {
                 console.log("Ошибка загрузки из облака, используем локальные данные", e);
@@ -720,11 +768,14 @@
             pollData.polls[pollIndex].votes[optionIndex]++;
             userVotes[key] = optionIndex;
 
-            // Записываем имя для открытого голосования (админ-панель)
+            // Записываем имя из Telegram + номер квартиры для открытого голосования
             if (pollData.polls[pollIndex].type !== 'anon') {
                 if (!pollData.polls[pollIndex].voters) pollData.polls[pollIndex].voters = {};
                 let user = tg.initDataUnsafe && tg.initDataUnsafe.user;
-                let fullName = (user && `${user.first_name || ''} ${user.last_name || ''}`.trim()) || (currentLang === 'uk' ? 'Мешканець' : 'Жилец');
+                let rawName = (user && `${user.first_name || ''} ${user.last_name || ''}`.trim()) || (currentLang === 'uk' ? 'Мешканець' : 'Жилец');
+                let flatInfo = userFlat ? ` (кв. ${userFlat})` : '';
+                let fullName = rawName + flatInfo;
+
                 pollData.polls[pollIndex].voters[fullName] = optionText;
             }
 
@@ -820,19 +871,7 @@
                 const key = el.getAttribute('data-i18n');
                 if (t[key]) el.innerText = t[key];
             });
-            const isLoggedOut = localStorage.getItem('is_logged_out') === 'true';
-            const user = tg.initDataUnsafe && tg.initDataUnsafe.user;
-            
-            if (!isLoggedOut && user && ADMIN_IDS.includes(user.id)) {
-                document.querySelector('.user-status').innerText = t.admin_status;
-            } else if (!isLoggedOut && user) {
-                document.querySelector('.user-status').innerText = currentLang === 'uk' ? 'Мешканець' : 'Жилец';
-            } else {
-                document.querySelector('.user-status').innerText = currentLang === 'uk' ? 'Гість' : 'Гость';
-            }
-
-            document.getElementById('input-theme').placeholder = currentLang === 'uk' ? "Наприклад: Прибирання снігу у дворі" : "Например: Уборка снега во дворе";
-            document.getElementById('input-options').placeholder = currentLang === 'uk' ? "За, Проти, Утримаюсь" : "За, Против, Воздержись";
+            initAuth();
             updateMyVotesUI();
         }
 
@@ -856,17 +895,29 @@
             const logoutBtn = document.getElementById('logout-btn');
             const loginBtn = document.getElementById('login-btn');
 
+            let flatInput = document.getElementById('input-flat');
+            if (flatInput && userFlat) flatInput.value = userFlat;
+
+            let avatarContainer = document.getElementById('user-avatar');
+
             if (isLoggedOut) {
                 document.getElementById('user-fullname').innerText = currentLang === 'uk' ? 'Гість (Не авторизовано)' : 'Гость (Не авторизован)';
-                document.getElementById('user-avatar').innerText = 'Ø';
+                avatarContainer.innerHTML = 'Ø';
                 document.querySelector('.user-status').innerText = currentLang === 'uk' ? 'Гість' : 'Гость';
                 if (createTabBtn) createTabBtn.style.display = 'none';
                 if (logoutBtn) logoutBtn.style.display = 'none';
                 if (loginBtn) loginBtn.style.display = 'block';
             } else if (user) {
-                const fullName = `${user.first_name || ''} ${user.last_name || ''}`.trim() || user.username || 'Жилец';
-                document.getElementById('user-fullname').innerText = fullName;
-                document.getElementById('user-avatar').innerText = fullName.charAt(0).toUpperCase();
+                let baseName = `${user.first_name || ''} ${user.last_name || ''}`.trim() || user.username || 'Жилец';
+                let displayName = userFlat ? `${baseName} (кв. ${userFlat})` : baseName;
+
+                document.getElementById('user-fullname').innerText = displayName;
+                
+                if (userPhoto) {
+                    avatarContainer.innerHTML = `<img src="${userPhoto}" alt="Avatar">`;
+                } else {
+                    avatarContainer.innerHTML = baseName.charAt(0).toUpperCase();
+                }
 
                 const isAdmin = ADMIN_IDS.includes(user.id);
                 if (logoutBtn) logoutBtn.style.display = 'block';
@@ -880,8 +931,16 @@
                     document.querySelector('.user-status').innerText = translations[currentLang].admin_status;
                 }
             } else {
-                document.getElementById('user-fullname').innerText = 'Дмитро Лутак';
-                document.getElementById('user-avatar').innerText = 'Д';
+                let baseName = 'Дмитро Лутак';
+                let displayName = userFlat ? `${baseName} (кв. ${userFlat})` : baseName;
+                document.getElementById('user-fullname').innerText = displayName;
+                
+                if (userPhoto) {
+                    avatarContainer.innerHTML = `<img src="${userPhoto}" alt="Avatar">`;
+                } else {
+                    avatarContainer.innerHTML = 'Д';
+                }
+
                 if (createTabBtn) createTabBtn.style.display = 'block';
                 document.querySelector('.user-status').innerText = translations[currentLang].admin_status;
             }
