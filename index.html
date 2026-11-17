@@ -1,384 +1,52 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Опросы жильцов</title>
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <style>
-    :root {
-      --bg: #121214;
-      --card-bg: #1A1A1E;
-      --card-border: #2A2A32;
-      --text: #FFFFFF;
-      --hint: #9CA3AF;
-      --accent: #CCFF00;
-      --btn-text: #121214;
-    }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background-color: var(--bg);
-      color: var(--text);
-      margin: 0;
-      padding: 16px;
-    }
-
-    .tabs {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 16px;
-      background: var(--card-bg);
-      padding: 4px;
-      border-radius: 12px;
-      border: 1px solid var(--card-border);
-    }
-    .tab {
-      flex: 1;
-      padding: 10px;
-      border: none;
-      border-radius: 8px;
-      background: transparent;
-      color: var(--hint);
-      font-weight: 600;
-      font-size: 14px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-    .tab.active {
-      background: var(--accent);
-      color: var(--btn-text);
-    }
-
-    .card {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 16px;
-      padding: 16px;
-      margin-bottom: 12px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-    }
-
-    .badge {
-      display: inline-block;
-      font-size: 11px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      padding: 5px 10px;
-      border-radius: 6px;
-      background: rgba(204, 255, 0, 0.1);
-      color: var(--accent);
-      margin-bottom: 10px;
-    }
-    .badge.anon {
-      background: rgba(245, 158, 11, 0.1);
-      color: #F59E0B;
-    }
-
-    h3, h4 { margin: 0 0 10px 0; }
-
-    input[type="text"] {
-      width: 100%;
-      box-sizing: border-box;
-      padding: 12px;
-      margin-bottom: 10px;
-      border: 1px solid var(--card-border);
-      border-radius: 10px;
-      background: var(--bg);
-      color: var(--text);
-      font-size: 14px;
-      outline: none;
-    }
-    input[type="text"]:focus { border-color: var(--accent); }
-
-    .anon-box {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: var(--bg);
-      padding: 12px 14px;
-      border-radius: 10px;
-      border: 1px solid var(--card-border);
-      margin: 14px 0;
-    }
-    .anon-box input[type="checkbox"] {
-      width: 20px;
-      height: 20px;
-      accent-color: var(--accent);
-    }
-
-    .btn {
-      width: 100%;
-      padding: 14px;
-      border: none;
-      border-radius: 12px;
-      background: var(--accent);
-      color: var(--btn-text);
-      font-weight: 700;
-      font-size: 15px;
-      cursor: pointer;
-    }
-    .btn:active { transform: scale(0.98); }
-    .btn-sec {
-      background: transparent;
-      border: 1px solid var(--card-border);
-      color: var(--text);
-      margin-top: 8px;
-    }
-
-    .option-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 12px 14px;
-      background: var(--bg);
-      border: 1px solid var(--card-border);
-      border-radius: 10px;
-      margin-top: 8px;
-      cursor: pointer;
-    }
-    .option-row.voted {
-      border-color: var(--accent);
-      background: rgba(204, 255, 0, 0.05);
-    }
-
-    .hidden { display: none; }
-    .actions { display: flex; gap: 8px; margin-top: 12px; }
-    .voter-names { font-size: 11px; color: var(--hint); margin-top: 4px; }
-    .loader { text-align: center; color: var(--hint); padding: 20px; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Опросы дома</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        :root {
+            --bg: #121214;
+            --card-bg: #1A1A1C;
+            --card-border: #2A2A32;
+            --text: #FFFFFF;
+            --hint: #9F9F9F;
+            --accent: #CCFF00;
+            --btn-text: #121214;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 16px;
+        }
+        h2 { font-size: 20px; margin-bottom: 16px; }
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+        .btn {
+            background: var(--accent);
+            color: var(--btn-text);
+            border: none;
+            border-radius: 8px;
+            padding: 10px 16px;
+            font-weight: 600;
+            width: 100%;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+    </style>
 </head>
 <body>
-
-  <div class="tabs">
-    <button id="tab-btn-active" class="tab active" onclick="switchTab('active')">Активные</button>
-    <button id="tab-btn-create" class="tab" onclick="switchTab('create')">+ Опрос</button>
-    <button id="tab-btn-history" class="tab" onclick="switchTab('history')">История</button>
-  </div>
-
-  <div id="loader" class="loader">Загрузка опросов...</div>
-
-  <div id="view-active"></div>
-
-  <div id="view-create" class="hidden">
+    <h2>Активные опросы</h2>
     <div class="card">
-      <h3 id="form-title" style="margin-bottom: 14px;">Новый опрос</h3>
-      <input type="hidden" id="edit-id">
-      <input type="text" id="poll-question" placeholder="Суть вопроса (напр. Замена ворот во дворе)">
-      
-      <div id="options-container">
-        <input type="text" class="poll-opt" placeholder="Вариант 1">
-        <input type="text" class="poll-opt" placeholder="Вариант 2">
-      </div>
-      
-      <button class="btn btn-sec" onclick="addOptionInput()">+ Добавить вариант</button>
-
-      <div class="anon-box">
-        <div>
-          <strong style="font-size: 14px;">🕵️ Анонимное голосование</strong>
-          <div style="font-size: 12px; color: var(--hint);">Имена жильцов будут скрыты</div>
-        </div>
-        <input type="checkbox" id="poll-anon">
-      </div>
-
-      <button class="btn" onclick="savePoll()">Опубликовать опрос</button>
+        <p>Загрузка опросов...</p>
     </div>
-  </div>
-
-  <div id="view-history" class="hidden"></div>
-
-  <script>
-    const DB_URL = "https://house-polls-default-rtdb.europe-west1.firebasedatabase.app";
-
-    const tg = window.Telegram.WebApp;
-    tg.expand();
-    const user = tg.initDataUnsafe?.user || { id: Math.floor(Math.random()*100000), first_name: "Тест-Жилец" };
-
-    let polls = [];
-
-    async function loadPolls() {
-      try {
-        const res = await fetch(`${DB_URL}/polls.json`);
-        const data = await res.json();
-        polls = data ? Object.values(data).sort((a, b) => b.id - a.id) : [];
-      } catch (e) {
-        console.error("Ошибка загрузки:", e);
-      }
-      document.getElementById('loader').classList.add('hidden');
-      render();
-    }
-
-    async function syncPollToDB(poll) {
-      await fetch(`${DB_URL}/polls/${poll.id}.json`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(poll)
-      });
-      await loadPolls();
-    }
-
-    function switchTab(tab) {
-      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-      document.getElementById('tab-btn-' + tab).classList.add('active');
-      
-      ['active', 'create', 'history'].forEach(v => {
-        document.getElementById('view-' + v).classList.toggle('hidden', v !== tab);
-      });
-      if (tab === 'create' && !document.getElementById('edit-id').value) resetForm();
-      render();
-    }
-
-    function addOptionInput(val = '') {
-      const inp = document.createElement('input');
-      inp.type = 'text';
-      inp.className = 'poll-opt';
-      inp.placeholder = 'Следующий вариант';
-      inp.value = val;
-      document.getElementById('options-container').appendChild(inp);
-    }
-
-    function resetForm() {
-      document.getElementById('form-title').innerText = 'Новый опрос';
-      document.getElementById('edit-id').value = '';
-      document.getElementById('poll-question').value = '';
-      document.getElementById('poll-anon').checked = false;
-      document.getElementById('options-container').innerHTML = `
-        <input type="text" class="poll-opt" placeholder="Вариант 1">
-        <input type="text" class="poll-opt" placeholder="Вариант 2">
-      `;
-    }
-
-    async function savePoll() {
-      const id = document.getElementById('edit-id').value;
-      const question = document.getElementById('poll-question').value.trim();
-      const isAnon = document.getElementById('poll-anon').checked;
-      const opts = Array.from(document.querySelectorAll('.poll-opt'))
-        .map(i => i.value.trim())
-        .filter(Boolean);
-
-      if (!question || opts.length < 2) return alert('Введите вопрос и минимум 2 варианта ответа!');
-
-      let targetPoll;
-      if (id) {
-        targetPoll = polls.find(p => p.id == id);
-        targetPoll.question = question;
-        targetPoll.isAnon = isAnon;
-        targetPoll.options = opts.map((text, idx) => ({
-          text,
-          voters: (targetPoll.options[idx] && targetPoll.options[idx].voters) ? targetPoll.options[idx].voters : []
-        }));
-      } else {
-        targetPoll = {
-          id: Date.now(),
-          question,
-          isAnon,
-          status: 'active',
-          date: new Date().toLocaleDateString('ru-RU'),
-          options: opts.map(text => ({ text, voters: [] }))
-        };
-      }
-
-      document.getElementById('loader').classList.remove('hidden');
-      await syncPollToDB(targetPoll);
-      resetForm();
-      switchTab('active');
-    }
-
-    async function vote(pollId, optIdx) {
-      const poll = polls.find(p => p.id === pollId);
-      if (!poll || poll.status !== 'active') return;
-      
-      poll.options.forEach(o => {
-        if (!o.voters) o.voters = [];
-        o.voters = o.voters.filter(v => v.id !== user.id);
-      });
-      poll.options[optIdx].voters.push({ id: user.id, name: user.first_name });
-      
-      render();
-      await syncPollToDB(poll);
-    }
-
-    function editPoll(id) {
-      const poll = polls.find(p => p.id === id);
-      switchTab('create');
-      document.getElementById('form-title').innerText = 'Редактирование';
-      document.getElementById('edit-id').value = poll.id;
-      document.getElementById('poll-question').value = poll.question;
-      document.getElementById('poll-anon').checked = poll.isAnon;
-      const cont = document.getElementById('options-container');
-      cont.innerHTML = '';
-      poll.options.forEach(o => addOptionInput(o.text));
-    }
-
-    async function archivePoll(id) {
-      const poll = polls.find(p => p.id === id);
-      poll.status = 'history';
-      await syncPollToDB(poll);
-    }
-
-    function render() {
-      const activeEl = document.getElementById('view-active');
-      const historyEl = document.getElementById('view-history');
-      activeEl.innerHTML = '';
-      historyEl.innerHTML = '';
-
-      const activePolls = polls.filter(p => p.status === 'active');
-      const historyPolls = polls.filter(p => p.status !== 'active');
-
-      if (activePolls.length === 0) {
-        activeEl.innerHTML = `<div class="card" style="text-align: center; color: var(--hint);">Пока нет активных опросов. Нажмите «+ Опрос», чтобы создать первый!</div>`;
-      }
-      if (historyPolls.length === 0) {
-        historyEl.innerHTML = `<div class="card" style="text-align: center; color: var(--hint);">История опросов пока пуста.</div>`;
-      }
-
-      polls.forEach(poll => {
-        const totalVotes = poll.options.reduce((sum, o) => sum + (o.voters ? o.voters.length : 0), 0);
-        const card = document.createElement('div');
-        card.className = 'card';
-
-        let optionsHtml = poll.options.map((opt, idx) => {
-          const voters = opt.voters || [];
-          const pct = totalVotes ? Math.round((voters.length / totalVotes) * 100) : 0;
-          const isVoted = voters.some(v => v.id === user.id);
-          const names = !poll.isAnon && voters.length 
-            ? `<div class="voter-names">Проголосовали: ${voters.map(v => v.name).join(', ')}</div>` 
-            : '';
-          return `
-            <div class="option-row ${isVoted ? 'voted' : ''}" onclick="vote(${poll.id}, ${idx})">
-              <div>
-                <div style="font-weight: 500;">${opt.text}</div>
-                ${names}
-              </div>
-              <strong style="color: var(--accent);">${voters.length} (${pct}%)</strong>
-            </div>
-          `;
-        }).join('');
-
-        const actionsHtml = poll.status === 'active' ? `
-          <div class="actions">
-            <button class="btn btn-sec" style="margin-top:0;" onclick="editPoll(${poll.id})">✏️ Изменить</button>
-            <button class="btn btn-sec" style="margin-top:0;" onclick="archivePoll(${poll.id})">📦 В архив</button>
-          </div>
-        ` : `<div style="font-size: 12px; color: var(--hint); margin-top: 10px;">Архив • ${poll.date}</div>`;
-
-        card.innerHTML = `
-          <span class="badge ${poll.isAnon ? 'anon' : ''}">
-            ${poll.isAnon ? '🕵️ Анонимный опрос' : '👁 Открытый опрос'}
-          </span>
-          <h4>${poll.question}</h4>
-          ${optionsHtml}
-          ${actionsHtml}
-        `;
-
-        if (poll.status === 'active') activeEl.appendChild(card);
-        else historyEl.appendChild(card);
-      });
-    }
-
-    loadPolls();
-    setInterval(loadPolls, 5000);
-  </script>
 </body>
 </html>
