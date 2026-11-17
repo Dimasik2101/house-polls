@@ -335,75 +335,15 @@
     <!-- Вкладка 1: Анонимные опросы -->
     <div id="anon" class="tab-content active">
         <h2 data-i18n="anon_title">Анонімні опитування</h2>
-        <div class="card">
-            <span class="badge badge-anon" data-i18n="badge_anon">Повністю анонімно</span>
-            <p style="margin: 8px 0 12px 0; font-weight: 500;" data-i18n="anon_question">Чи потрібна додаткова охорона вночі?</p>
-            
-            <div class="option-result" id="anon-opt-0" onclick="vote('anon', 0, 'Чи потрібна додаткова охорона вночі?', 'Так, потрібна')">
-                <div class="progress-bar" id="anon-bar-0" style="width: 70%;"></div>
-                <div class="option-info">
-                    <span data-i18n="anon_opt1">Так, потрібна</span>
-                    <strong id="anon-votes-0">21 (70%)</strong>
-                </div>
-            </div>
-
-            <div class="option-result" id="anon-opt-1" onclick="vote('anon', 1, 'Чи потрібна додаткова охорона вночі?', 'Ні, достатньо камер')">
-                <div class="progress-bar" id="anon-bar-1" style="width: 30%; background: rgba(159,159,159,0.1);"></div>
-                <div class="option-info">
-                    <span data-i18n="anon_opt2">Ні, достатньо камер</span>
-                    <strong id="anon-votes-1" style="color: var(--hint);">9 (30%)</strong>
-                </div>
-            </div>
-            
-            <button class="btn-delete-poll" id="btn-delete-anon" onclick="deleteFixedPoll('anon')" data-i18n="btn_delete">🗑 Видалити опитування</button>
-        </div>
+        <div id="anon-polls-container"></div>
+        <div id="anon-empty" style="font-size: 13px; color: var(--hint);" data-i18n="no_anon">Немає активних анонімних опитувань.</div>
     </div>
 
     <!-- Вкладка 2: Публичные опросы -->
     <div id="public" class="tab-content">
         <h2 data-i18n="public_title">Публічні опитування</h2>
-        
-        <div class="card">
-            <span class="badge" data-i18n="badge_open">Відкрите опитування</span>
-            <p style="margin: 8px 0 12px 0; font-weight: 500;" data-i18n="poll_question">Встановлення шлагбаума на в'їзді у двір?</p>
-            
-            <div class="option-result" id="public-opt-0" onclick="vote('public', 0, 'Встановлення шлагбаума на в\'їзді у двір?', 'За встановлення шлагбаума')">
-                <div class="progress-bar" id="public-bar-0" style="width: 82%;"></div>
-                <div class="option-info">
-                    <span data-i18n="poll_opt1">За встановлення шлагбаума</span>
-                    <strong id="public-votes-0">14 (82%)</strong>
-                </div>
-            </div>
-
-            <div class="option-result" id="public-opt-1" onclick="vote('public', 1, 'Встановлення шлагбаума на в\'їзді у двір?', 'Проти')">
-                <div class="progress-bar" id="public-bar-1" style="width: 18%; background: rgba(159,159,159,0.1);"></div>
-                <div class="option-info">
-                    <span data-i18n="poll_opt2">Проти</span>
-                    <strong id="public-votes-1" style="color: var(--hint);">3 (18%)</strong>
-                </div>
-            </div>
-
-            <div id="admin-results-panel" class="admin-panel">
-                <div class="admin-title" data-i18n="admin_panel_title">🛠 Панель адміна: Хто голосував</div>
-                <div class="voter-item">
-                    <span>Дмитро Лутак</span>
-                    <span style="color: var(--accent);">За встановлення</span>
-                </div>
-                <div class="voter-item">
-                    <span>Олександр Петренко</span>
-                    <span style="color: var(--accent);">За встановлення</span>
-                </div>
-                <div class="voter-item">
-                    <span>Марія Коваль</span>
-                    <span style="color: var(--hint);">Проти</span>
-                </div>
-                <div style="font-size: 11px; color: var(--hint); margin-top: 8px; text-align: right;" data-i18n="total_votes">Всього проголосувало: 17 мешканців</div>
-            </div>
-
-            <button class="btn-delete-poll" id="btn-delete-public" onclick="deleteFixedPoll('public')" data-i18n="btn_delete">🗑 Видалити опитування</button>
-        </div>
-
-        <div id="dynamic-polls-container"></div>
+        <div id="public-polls-container"></div>
+        <div id="public-empty" style="font-size: 13px; color: var(--hint);" data-i18n="no_public">Немає активних публічних опитувань.</div>
     </div>
 
     <!-- Вкладка 3: Мои голосы -->
@@ -417,14 +357,8 @@
     <!-- Вкладка 4: Архив -->
     <div id="archive" class="tab-content">
         <h2 data-i18n="archive_title">Архів опитувань</h2>
-        <div class="card" id="archive-card-0">
-            <span class="badge" style="background: #2A2A32; color: var(--hint);" data-i18n="badge_closed">Завершено</span>
-            <p style="margin: 8px 0 12px 0; font-weight: 500;" data-i18n="archive_q">Ремонт під'їзних дверей (листопад)</p>
-            <p style="font-size: 13px; color: var(--hint); margin: 0;" data-i18n="archive_res">Підсумок: Вирішено робити (89% за)</p>
-            
-            <button class="btn-delete-poll" id="btn-delete-archive" onclick="deleteArchiveItem()" data-i18n="btn_delete">🗑 Видалити опитування</button>
-        </div>
-        <div id="archive-empty" style="display: none; font-size: 13px; color: var(--hint);" data-i18n="no_archive">Архів порожній.</div>
+        <div id="archive-container"></div>
+        <div id="archive-empty" style="font-size: 13px; color: var(--hint);" data-i18n="no_archive">Архів порожній.</div>
     </div>
 
     <!-- Вкладка 5: Создать опрос -->
@@ -436,6 +370,12 @@
             
             <label style="font-size: 13px; color: var(--hint);" data-i18n="label_options">Варіанти відповіді (через кому)</label>
             <textarea id="input-options" placeholder="За, Проти, Утримаюсь"></textarea>
+
+            <label style="font-size: 13px; color: var(--hint); display: block; margin-bottom: 4px;" data-i18n="label_type">Тип опитування</label>
+            <select id="input-type" style="width: 100%; background: #121214; border: 1px solid var(--card-border); border-radius: 8px; padding: 10px; color: var(--text); margin-bottom: 12px; box-sizing: border-box;">
+                <option value="public" data-i18n="type_public">Публічне (відкрите)</option>
+                <option value="anon" data-i18n="type_anon">Анонімне</option>
+            </select>
 
             <button class="btn" onclick="createNewPoll()" data-i18n="btn_publish">Опублікувати опитування</button>
         </div>
@@ -480,6 +420,10 @@
             1995828547
         ];
 
+        // Ключи синхронизации JSONBin.io
+        const BIN_ID = "6afc8cc8ffd5d16053c91378"; 
+        const API_KEY = "$2a$10$fhjPy919PteQJBG6zV6cAOafeRiFaAKWOqN54lsxypaR8HtPV9Bt";
+
         const translations = {
             uk: {
                 resident: "Мешканець будинку",
@@ -492,30 +436,27 @@
                 tab_create: "+ Створити",
                 tab_settings: "⚙️ Налаштування",
                 anon_title: "Анонімні опитування",
-                badge_anon: "Повністю анонімно",
-                anon_question: "Чи потрібна додаткова охорона вночі?",
-                anon_opt1: "Так, потрібна",
-                anon_opt2: "Ні, достатньо камер",
                 public_title: "Публічні опитування",
-                badge_open: "Відкрите опитування",
-                poll_question: "Встановлення шлагбаума на в'їзді у двір?",
-                poll_opt1: "За встановлення шлагбаума",
-                poll_opt2: "Проти",
                 my_votes_title: "Історія ваших голосів",
                 no_votes: "Ви поки що не взяли участь в жодному опитуванні.",
                 voted_for: "Ваш вибір:",
-                admin_panel_title: "🛠 Панель адміна: Хто голосував",
-                total_votes: "Всього проголосувало: 17 мешканців",
                 archive_title: "Архів опитувань",
-                badge_closed: "Завершено",
-                archive_q: "Ремонт під'їзних дверей (листопад)",
-                archive_res: "Підсумок: Вирішено робити (89% за)",
                 no_archive: "Архів порожній.",
+                no_anon: "Немає активних анонімних опитувань.",
+                no_public: "Немає активних публічних опитувань.",
                 create_title: "Нове опитування",
                 label_theme: "Тема опитування",
                 label_options: "Варіанти відповіді (через кому)",
+                label_type: "Тип опитування",
+                type_public: "Публічне (відкрите)",
+                type_anon: "Анонімне",
+                badge_open: "Відкрите опитування",
+                badge_anon: "Повністю анонімно",
+                badge_closed: "Завершено",
                 btn_publish: "Опублікувати опитування",
-                btn_delete: "🗑 Видалити опитування",
+                btn_delete: "🗑 Видалити запис",
+                btn_delete_poll: "🗑 Видалити опитування",
+                admin_panel_title: "🛠 Панель адміна: Хто голосував",
                 settings_title: "Налаштування мови",
                 settings_desc: "Оберіть мову інтерфейсу додатку:",
                 acc_title: "Керування акаунтом",
@@ -534,30 +475,27 @@
                 tab_create: "+ Создать",
                 tab_settings: "⚙️ Настройки",
                 anon_title: "Анонимные опросы",
-                badge_anon: "Полностью анонимно",
-                anon_question: "Нужна ли дополнительная охрана ночью?",
-                anon_opt1: "Да, нужна",
-                anon_opt2: "Нет, достаточно камер",
                 public_title: "Публичные опросы",
-                badge_open: "Открытый опрос",
-                poll_question: "Установка шлагбаума на въезде во двор?",
-                poll_opt1: "За установку шлагбаума",
-                poll_opt2: "Против",
                 my_votes_title: "История ваших голосов",
                 no_votes: "Вы пока не приняли участие ни в одном опросе.",
                 voted_for: "Ваш выбор:",
-                admin_panel_title: "🛠 Панель админа: Кто голосовал",
-                total_votes: "Всего проголосовало: 17 жителей",
                 archive_title: "Архив опросов",
-                badge_closed: "Завершен",
-                archive_q: "Ремонт подъездных дверей (ноябрь)",
-                archive_res: "Итог: Решено делать (89% за)",
                 no_archive: "Архив пуст.",
+                no_anon: "Нет активных анонимных опросов.",
+                no_public: "Нет активных публичных опросов.",
                 create_title: "Новый опрос",
                 label_theme: "Тема опроса",
                 label_options: "Варианты ответа (через запятую)",
+                label_type: "Тип опроса",
+                type_public: "Публичное (открытое)",
+                type_anon: "Анонимное",
+                badge_open: "Открытый опрос",
+                badge_anon: "Полностью анонимно",
+                badge_closed: "Завершен",
                 btn_publish: "Опубликовать опрос",
-                btn_delete: "🗑 Удалить опрос",
+                btn_delete: "🗑 Удалить запись",
+                btn_delete_poll: "🗑 Удалить опрос",
+                admin_panel_title: "🛠 Панель админа: Кто голосовал",
                 settings_title: "Настройки языка",
                 settings_desc: "Выберите язык интерфейса приложения:",
                 acc_title: "Управление аккаунтом",
@@ -569,15 +507,55 @@
 
         let currentLang = localStorage.getItem('app_lang') || 'uk';
 
-        let pollData = JSON.parse(localStorage.getItem('poll_data')) || {
-            anon: { active: true, votes: [21, 9] },
-            public: { active: true, votes: [14, 3] },
-            archiveActive: true,
-            customPolls: []
+        let pollData = {
+            polls: [],
+            archive: []
         };
 
         let userVotes = JSON.parse(localStorage.getItem('user_votes')) || {};
         let myVoteHistory = JSON.parse(localStorage.getItem('my_vote_history')) || [];
+
+        async function fetchCloudData() {
+            try {
+                let response = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
+                    headers: { 'X-Access-Key': API_KEY }
+                });
+                let data = await response.json();
+                if (data && data.record) {
+                    // Поддержка старого и нового формата
+                    if (Array.isArray(data.record.polls)) {
+                        pollData = data.record;
+                    } else {
+                        pollData = { polls: [], archive: [] };
+                    }
+                }
+            } catch (e) {
+                console.log("Ошибка загрузки из облака, используем локальные данные", e);
+                let local = localStorage.getItem('poll_data');
+                if (local) pollData = JSON.parse(local);
+            }
+            updateAllUI();
+        }
+
+        async function saveCloudData() {
+            localStorage.setItem('poll_data', JSON.stringify(pollData));
+            localStorage.setItem('user_votes', JSON.stringify(userVotes));
+            localStorage.setItem('my_vote_history', JSON.stringify(myVoteHistory));
+            updateAllUI();
+
+            try {
+                await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Access-Key': API_KEY
+                    },
+                    body: JSON.stringify(pollData)
+                });
+            } catch (e) {
+                console.log("Ошибка сохранения в облако", e);
+            }
+        }
 
         function switchTab(tabId, element) {
             document.querySelectorAll('.tab-content').forEach(content => {
@@ -590,95 +568,118 @@
             element.classList.add('active');
         }
 
-        function saveData() {
-            localStorage.setItem('poll_data', JSON.stringify(pollData));
-            localStorage.setItem('user_votes', JSON.stringify(userVotes));
-            localStorage.setItem('my_vote_history', JSON.stringify(myVoteHistory));
+        function updateAllUI() {
             updatePollUI();
             updateMyVotesUI();
             updateArchiveUI();
         }
 
-        function updateArchiveUI() {
-            const archiveCard = document.getElementById('archive-card-0');
-            const archiveEmpty = document.getElementById('archive-empty');
-            if (!pollData.archiveActive) {
-                archiveCard.style.display = 'none';
-                archiveEmpty.style.display = 'block';
-            } else {
-                archiveCard.style.display = 'block';
-                archiveEmpty.style.display = 'none';
+        function updatePollUI() {
+            let anonContainer = document.getElementById('anon-polls-container');
+            let publicContainer = document.getElementById('public-polls-container');
+            let anonEmpty = document.getElementById('anon-empty');
+            let publicEmpty = document.getElementById('public-empty');
+
+            anonContainer.innerHTML = '';
+            publicContainer.innerHTML = '';
+
+            let hasAnon = false;
+            let hasPublic = false;
+
+            if (pollData.polls && pollData.polls.length > 0) {
+                pollData.polls.forEach((poll, index) => {
+                    let totalC = poll.votes.reduce((a, b) => a + b, 0);
+                    let isAnon = poll.type === 'anon';
+
+                    if (isAnon) hasAnon = true;
+                    else hasPublic = true;
+
+                    let optionsHtml = poll.options.map((opt, i) => {
+                        let percent = totalC ? Math.round((poll.votes[i] / totalC) * 100) : 0;
+                        let isMyVote = userVotes[`poll_${index}`] === i;
+                        return `
+                            <div class="option-result ${isMyVote ? 'my-vote' : ''}" onclick="votePoll(${index}, '${poll.theme.replace(/'/g, "\\'")}', ${i}, '${opt.replace(/'/g, "\\'")}')">
+                                <div class="progress-bar" style="width: ${percent}%;"></div>
+                                <div class="option-info">
+                                    <span>${opt}</span>
+                                    <strong>${poll.votes[i]} (${percent}%)</strong>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+
+                    let isLoggedOut = localStorage.getItem('is_logged_out') === 'true';
+                    let user = tg.initDataUnsafe && tg.initDataUnsafe.user;
+                    let isAdmin = (!isLoggedOut && user && ADMIN_IDS.includes(user.id)) || (!user && !isLoggedOut);
+
+                    let deleteBtnHtml = isAdmin ? `
+                        <button class="btn-delete-poll" style="display: block;" onclick="deletePoll(${index})">${translations[currentLang].btn_delete_poll}</button>
+                        <button class="btn" style="background: #2A2A32; color: var(--accent); margin-top: 8px;" onclick="archivePoll(${index})">📦 В архів</button>
+                    ` : '';
+
+                    let votersHtml = '';
+                    if (!isAnon && isAdmin && poll.voters && Object.keys(poll.voters).length > 0) {
+                        let items = Object.entries(poll.voters).map(([name, optName]) => `
+                            <div class="voter-item">
+                                <span>${name}</span>
+                                <span style="color: var(--accent);">${optName}</span>
+                            </div>
+                        `).join('');
+                        votersHtml = `
+                            <div class="admin-panel" style="display: block;">
+                                <div class="admin-title">${translations[currentLang].admin_panel_title}</div>
+                                ${items}
+                                <div style="font-size: 11px; color: var(--hint); margin-top: 8px; text-align: right;">Всього проголосувало: ${totalC}</div>
+                            </div>
+                        `;
+                    }
+
+                    let card = document.createElement('div');
+                    card.className = 'card';
+                    card.innerHTML = `
+                        <span class="badge ${isAnon ? 'badge-anon' : ''}">${isAnon ? translations[currentLang].badge_anon : translations[currentLang].badge_open}</span>
+                        <p style="margin: 8px 0 12px 0; font-weight: 500;">${poll.theme}</p>
+                        ${optionsHtml}
+                        ${votersHtml}
+                        ${deleteBtnHtml}
+                    `;
+
+                    if (isAnon) {
+                        anonContainer.appendChild(card);
+                    } else {
+                        publicContainer.appendChild(card);
+                    }
+                });
             }
+
+            anonEmpty.style.display = hasAnon ? 'none' : 'block';
+            publicEmpty.style.display = hasPublic ? 'none' : 'block';
         }
 
-        function updatePollUI() {
-            const anonCard = document.getElementById('anon-opt-0').closest('.card');
-            if (!pollData.anon.active) {
-                anonCard.style.display = 'none';
-            } else {
-                anonCard.style.display = 'block';
-                let anonTotal = pollData.anon.votes.reduce((a, b) => a + b, 0);
-                let anonP0 = anonTotal ? Math.round((pollData.anon.votes[0] / anonTotal) * 100) : 0;
-                let anonP1 = 100 - anonP0;
-                
-                document.getElementById('anon-bar-0').style.width = anonP0 + '%';
-                document.getElementById('anon-bar-1').style.width = anonP1 + '%';
-                document.getElementById('anon-votes-0').innerText = `${pollData.anon.votes[0]} (${anonP0}%)`;
-                document.getElementById('anon-votes-1').innerText = `${pollData.anon.votes[1]} (${anonP1}%)`;
-
-                document.getElementById('anon-opt-0').classList.toggle('my-vote', userVotes['anon'] === 0);
-                document.getElementById('anon-opt-1').classList.toggle('my-vote', userVotes['anon'] === 1);
-            }
-
-            const publicCard = document.getElementById('public-opt-0').closest('.card');
-            if (!pollData.public.active) {
-                publicCard.style.display = 'none';
-            } else {
-                publicCard.style.display = 'block';
-                let pubTotal = pollData.public.votes.reduce((a, b) => a + b, 0);
-                let pubP0 = pubTotal ? Math.round((pollData.public.votes[0] / pubTotal) * 100) : 0;
-                let pubP1 = 100 - pubP0;
-
-                document.getElementById('public-bar-0').style.width = pubP0 + '%';
-                document.getElementById('public-bar-1').style.width = pubP1 + '%';
-                document.getElementById('public-votes-0').innerText = `${pollData.public.votes[0]} (${pubP0}%)`;
-                document.getElementById('public-votes-1').innerText = `${pollData.public.votes[1]} (${pubP1}%)`;
-
-                document.getElementById('public-opt-0').classList.toggle('my-vote', userVotes['public'] === 0);
-                document.getElementById('public-opt-1').classList.toggle('my-vote', userVotes['public'] === 1);
-            }
-
-            let container = document.getElementById('dynamic-polls-container');
+        function updateArchiveUI() {
+            let container = document.getElementById('archive-container');
+            let emptyMsg = document.getElementById('archive-empty');
             container.innerHTML = '';
-            pollData.customPolls.forEach((poll, index) => {
+
+            if (!pollData.archive || pollData.archive.length === 0) {
+                emptyMsg.style.display = 'block';
+                return;
+            }
+
+            emptyMsg.style.display = 'none';
+            pollData.archive.forEach((item, index) => {
                 let card = document.createElement('div');
                 card.className = 'card';
-                let totalC = poll.votes.reduce((a, b) => a + b, 0);
 
-                let optionsHtml = poll.options.map((opt, i) => {
-                    let percent = totalC ? Math.round((poll.votes[i] / totalC) * 100) : 0;
-                    let isMyVote = userVotes[`custom_${index}`] === i;
-                    return `
-                        <div class="option-result ${isMyVote ? 'my-vote' : ''}" onclick="voteCustom(${index}, '${poll.theme.replace(/'/g, "\\'")}', ${i}, '${opt.replace(/'/g, "\\'")}')">
-                            <div class="progress-bar" style="width: ${percent}%;"></div>
-                            <div class="option-info">
-                                <span>${opt}</span>
-                                <strong>${poll.votes[i]} (${percent}%)</strong>
-                            </div>
-                        </div>
-                    `;
-                }).join('');
-                
                 let isLoggedOut = localStorage.getItem('is_logged_out') === 'true';
                 let user = tg.initDataUnsafe && tg.initDataUnsafe.user;
                 let isAdmin = (!isLoggedOut && user && ADMIN_IDS.includes(user.id)) || (!user && !isLoggedOut);
-
-                let deleteBtnHtml = isAdmin ? `<button class="btn-delete-poll" style="display: block;" onclick="deleteCustomPoll(${index})">${translations[currentLang].btn_delete}</button>` : '';
+                let deleteBtnHtml = isAdmin ? `<button class="btn-delete-poll" style="display: block;" onclick="deleteArchive(${index})">${translations[currentLang].btn_delete_poll}</button>` : '';
 
                 card.innerHTML = `
-                    <span class="badge">Нове опитування</span>
-                    <p style="margin: 8px 0 12px 0; font-weight: 500;">${poll.theme}</p>
-                    ${optionsHtml}
+                    <span class="badge" style="background: #2A2A32; color: var(--hint);">${translations[currentLang].badge_closed}</span>
+                    <p style="margin: 8px 0 6px 0; font-weight: 500;">${item.theme}</p>
+                    <p style="font-size: 13px; color: var(--hint); margin: 0;">Підсумок: ${item.summary}</p>
                     ${deleteBtnHtml}
                 `;
                 container.appendChild(card);
@@ -693,74 +694,89 @@
             }
 
             container.innerHTML = '';
-            myVoteHistory.forEach(item => {
+            myVoteHistory.forEach((item, index) => {
                 let card = document.createElement('div');
                 card.className = 'card';
                 card.innerHTML = `
                     <span class="badge" style="background: rgba(204,255,0,0.1); color: var(--accent);">✅ ${translations[currentLang].voted_for}</span>
                     <p style="margin: 6px 0 8px 0; font-weight: 500; font-size: 15px;">${item.theme}</p>
-                    <div style="background: #121214; border: 1px solid var(--card-border); border-radius: 8px; padding: 10px; font-size: 13px; display: flex; justify-content: space-between; align-items: center;">
+                    <div style="background: #121214; border: 1px solid var(--card-border); border-radius: 8px; padding: 10px; font-size: 13px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                         <span style="color: var(--hint);">${item.optionText}</span>
                         <strong style="color: var(--accent);">✔ Проголосовано</strong>
                     </div>
+                    <button class="btn-delete-poll" style="display: block; margin-top: 0;" onclick="deleteVoteHistoryItem(${index})">${translations[currentLang].btn_delete}</button>
                 `;
                 container.appendChild(card);
             });
         }
 
-        function vote(type, index, themeText, optionText) {
-            if (userVotes[type] !== undefined) {
-                alert(currentLang === 'uk' ? '⚠️ Ви вже проголосували в цьому опитуванні!' : '⚠️ Вы уже проголосовали в этом опросе!');
-                return;
-            }
-            pollData[type].votes[index]++;
-            userVotes[type] = index;
-
-            myVoteHistory.push({ theme: themeText, optionText: optionText });
-            saveData();
-            if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-            alert(currentLang === 'uk' ? '✅ Голос зараховано!' : '✅ Голос учтен!');
-        }
-
-        function voteCustom(pollIndex, themeText, optionIndex, optionText) {
-            let key = `custom_${pollIndex}`;
+        function votePoll(pollIndex, themeText, optionIndex, optionText) {
+            let key = `poll_${pollIndex}`;
             if (userVotes[key] !== undefined) {
                 alert(currentLang === 'uk' ? '⚠️ Ви вже проголосували в цьому опитуванні!' : '⚠️ Вы уже проголосовали в этом опросе!');
                 return;
             }
-            pollData.customPolls[pollIndex].votes[optionIndex]++;
+
+            pollData.polls[pollIndex].votes[optionIndex]++;
             userVotes[key] = optionIndex;
 
+            // Записываем имя для открытого голосования (админ-панель)
+            if (pollData.polls[pollIndex].type !== 'anon') {
+                if (!pollData.polls[pollIndex].voters) pollData.polls[pollIndex].voters = {};
+                let user = tg.initDataUnsafe && tg.initDataUnsafe.user;
+                let fullName = (user && `${user.first_name || ''} ${user.last_name || ''}`.trim()) || (currentLang === 'uk' ? 'Мешканець' : 'Жилец');
+                pollData.polls[pollIndex].voters[fullName] = optionText;
+            }
+
             myVoteHistory.push({ theme: themeText, optionText: optionText });
-            saveData();
+            saveCloudData();
             if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
             alert(currentLang === 'uk' ? '✅ Голос зараховано!' : '✅ Голос учтен!');
         }
 
-        function deleteFixedPoll(type) {
+        function deletePoll(index) {
             if (confirm(currentLang === 'uk' ? 'Ви дійсно хочете видалити це опитування?' : 'Вы действительно хотите удалить этот опрос?')) {
-                pollData[type].active = false;
-                saveData();
+                pollData.polls.splice(index, 1);
+                saveCloudData();
             }
         }
 
-        function deleteArchiveItem() {
-            if (confirm(currentLang === 'uk' ? 'Ви дійсно хочете видалити цей пункт з архіву?' : 'Вы действительно хотите удалить этот пункт из архива?')) {
-                pollData.archiveActive = false;
-                saveData();
+        function archivePoll(index) {
+            let poll = pollData.polls[index];
+            let total = poll.votes.reduce((a, b) => a + b, 0);
+            let maxVotes = Math.max(...poll.votes);
+            let maxIndex = poll.votes.indexOf(maxVotes);
+            let summary = total > 0 ? `${poll.options[maxIndex]} (${Math.round((maxVotes/total)*100)}%)` : 'Немає голосів';
+
+            if (!pollData.archive) pollData.archive = [];
+            pollData.archive.push({
+                theme: poll.theme,
+                summary: summary
+            });
+
+            pollData.polls.splice(index, 1);
+            saveCloudData();
+        }
+
+        function deleteArchive(index) {
+            if (confirm(currentLang === 'uk' ? 'Видалити з архіву?' : 'Удалить из архива?')) {
+                pollData.archive.splice(index, 1);
+                saveCloudData();
             }
         }
 
-        function deleteCustomPoll(index) {
-            if (confirm(currentLang === 'uk' ? 'Ви дійсно хочете видалити це опитування?' : 'Вы действительно хотите удалить этот опрос?')) {
-                pollData.customPolls.splice(index, 1);
-                saveData();
+        function deleteVoteHistoryItem(index) {
+            if (confirm(currentLang === 'uk' ? 'Видалити цей запис з історії?' : 'Удалить эту запись из истории?')) {
+                myVoteHistory.splice(index, 1);
+                localStorage.setItem('my_vote_history', JSON.stringify(myVoteHistory));
+                updateMyVotesUI();
             }
         }
 
         function createNewPoll() {
             let theme = document.getElementById('input-theme').value.trim();
             let optionsText = document.getElementById('input-options').value.trim();
+            let type = document.getElementById('input-type').value;
 
             if (!theme || !optionsText) {
                 alert(currentLang === 'uk' ? 'Будь ласка, заповніть усі поля!' : 'Пожалуйста, заполните все поля!');
@@ -773,18 +789,21 @@
                 return;
             }
 
-            pollData.customPolls.push({
+            if (!pollData.polls) pollData.polls = [];
+            pollData.polls.push({
                 theme: theme,
                 options: options,
-                votes: new Array(options.length).fill(0)
+                votes: new Array(options.length).fill(0),
+                type: type,
+                voters: {}
             });
 
-            saveData();
+            saveCloudData();
             document.getElementById('input-theme').value = '';
             document.getElementById('input-options').value = '';
 
             alert(currentLang === 'uk' ? 'Опитування успішно створено!' : 'Опрос успешно создан!');
-            switchTab('public', document.querySelectorAll('.tab')[1]);
+            switchTab(type === 'anon' ? 'anon' : 'public', document.querySelectorAll('.tab')[type === 'anon' ? 0 : 1]);
         }
 
         function setLanguage(lang) {
@@ -820,13 +839,13 @@
         function logoutUser() {
             localStorage.setItem('is_logged_out', 'true');
             initAuth();
-            saveData();
+            updateAllUI();
         }
 
         function loginUser() {
             localStorage.setItem('is_logged_out', 'false');
             initAuth();
-            saveData();
+            updateAllUI();
         }
         
         function initAuth() {
@@ -834,24 +853,16 @@
             const isLoggedOut = localStorage.getItem('is_logged_out') === 'true';
             
             const createTabBtn = document.getElementById('tab-create-btn');
-            const adminPanel = document.getElementById('admin-results-panel');
             const logoutBtn = document.getElementById('logout-btn');
             const loginBtn = document.getElementById('login-btn');
-            const btnDeleteAnon = document.getElementById('btn-delete-anon');
-            const btnDeletePublic = document.getElementById('btn-delete-public');
-            const btnDeleteArchive = document.getElementById('btn-delete-archive');
 
             if (isLoggedOut) {
                 document.getElementById('user-fullname').innerText = currentLang === 'uk' ? 'Гість (Не авторизовано)' : 'Гость (Не авторизован)';
                 document.getElementById('user-avatar').innerText = 'Ø';
                 document.querySelector('.user-status').innerText = currentLang === 'uk' ? 'Гість' : 'Гость';
                 if (createTabBtn) createTabBtn.style.display = 'none';
-                if (adminPanel) adminPanel.style.display = 'none';
                 if (logoutBtn) logoutBtn.style.display = 'none';
                 if (loginBtn) loginBtn.style.display = 'block';
-                if (btnDeleteAnon) btnDeleteAnon.style.display = 'none';
-                if (btnDeletePublic) btnDeletePublic.style.display = 'none';
-                if (btnDeleteArchive) btnDeleteArchive.style.display = 'none';
             } else if (user) {
                 const fullName = `${user.first_name || ''} ${user.last_name || ''}`.trim() || user.username || 'Жилец';
                 document.getElementById('user-fullname').innerText = fullName;
@@ -863,27 +874,15 @@
 
                 if (!isAdmin) {
                     if (createTabBtn) createTabBtn.style.display = 'none';
-                    if (adminPanel) adminPanel.style.display = 'none';
-                    if (btnDeleteAnon) btnDeleteAnon.style.display = 'none';
-                    if (btnDeletePublic) btnDeletePublic.style.display = 'none';
-                    if (btnDeleteArchive) btnDeleteArchive.style.display = 'none';
                     document.querySelector('.user-status').innerText = currentLang === 'uk' ? 'Мешканець' : 'Жилец';
                 } else {
                     if (createTabBtn) createTabBtn.style.display = 'block';
-                    if (adminPanel) adminPanel.style.display = 'block';
-                    if (btnDeleteAnon) btnDeleteAnon.style.display = 'block';
-                    if (btnDeletePublic) btnDeletePublic.style.display = 'block';
-                    if (btnDeleteArchive) btnDeleteArchive.style.display = 'block';
                     document.querySelector('.user-status').innerText = translations[currentLang].admin_status;
                 }
             } else {
                 document.getElementById('user-fullname').innerText = 'Дмитро Лутак';
                 document.getElementById('user-avatar').innerText = 'Д';
                 if (createTabBtn) createTabBtn.style.display = 'block';
-                if (adminPanel) adminPanel.style.display = 'block';
-                if (btnDeleteAnon) btnDeleteAnon.style.display = 'block';
-                if (btnDeletePublic) btnDeletePublic.style.display = 'block';
-                if (btnDeleteArchive) btnDeleteArchive.style.display = 'block';
                 document.querySelector('.user-status').innerText = translations[currentLang].admin_status;
             }
         }
@@ -891,8 +890,7 @@
         document.addEventListener("DOMContentLoaded", () => {
             setLanguage(currentLang);
             initAuth();
-            updatePollUI();
-            updateArchiveUI();
+            fetchCloudData();
         });
     </script>
 </body>
